@@ -4,6 +4,7 @@
 
 Based on Dethe Elza's version https://bitbucket.org/dethe/gocairo
 
+Updated for Go 1.
 
 
 cairo - a vector graphics library with display and print output
