@@ -40,6 +40,7 @@ package cairo
 // #cgo pkg-config: cairo
 // #include <cairo/cairo.h>
 // #include <stdlib.h>
+// #include <string.h>
 import "C"
 
 import (
@@ -82,16 +83,20 @@ const (
 	StatusInvalidWeight
 )
 
+type Conent int
+
 // cairo_content_t values
 const (
-	ContentColor = iota * 0x1000
+	ContentColor Conent = iota * 0x1000
 	ContentAlpha
 	ContentColorAlpha
 )
 
+type Operator int
+
 // cairo_operator_t values
 const (
-	OperatorClear = iota
+	OperatorClear Operator = iota
 	OperatorSource
 	OperatorOver
 	OperatorIn
@@ -107,30 +112,38 @@ const (
 	OperatorSaturate
 )
 
+type Antialias int
+
 // cairo_antialias_t values
 const (
-	AntialiasDefault = iota
+	AntialiasDefault Antialias = iota
 	AntialiasNone
 	AntialiasGray
 	AntialiasSubpixel
 )
 
+type FillRule int
+
 // cairo_fill_rule_t values
 const (
-	FillRuleWinding = iota
+	FillRuleWinding FillRule = iota
 	FillRuleEvenOdd
 )
 
+type LineCap int
+
 // cairo_line_cap_t values
 const (
-	LineCapButt = iota
+	LineCapButt LineCap = iota
 	LineCapRound
 	LineCapSquare
 )
 
+type LineJoin int
+
 // cairo_line_cap_join_t values
 const (
-	LineJoinMiter = iota
+	LineJoinMiter LineJoin = iota
 	LineJoinRound
 	LineJoinBevel
 )
@@ -213,13 +226,17 @@ const (
 	SurfaceTypeQuartzImage
 )
 
+type Format int
+
 // cairo_format_t values
 const (
-	FormatArgB32 = iota
-	FormatRGB24
-	FormatA8
-	FormatA1
-	_ // reserved for deprecated value
+	FORMAT_INVALID   = -1
+	FORMAT_ARGB32    = 0
+	FORMAT_RGB24     = 1
+	FORMAT_A8        = 2
+	FORMAT_A1        = 3
+	FORMAT_RGB16_565 = 4
+	FORMAT_RGB30     = 5
 )
 
 // cairo_pattern_type_t values
@@ -275,7 +292,7 @@ func Version() int {
 	return int(C.cairo_version())
 }
 
-func NewSurface(format, width, height int) *Surface {
+func NewSurface(format Format, width, height int) *Surface {
 	surface := new(Surface)
 	surface.surface = C.cairo_image_surface_create(C.cairo_format_t(format), C.int(width), C.int(height))
 	surface.context = C.cairo_create(surface.surface)
@@ -288,7 +305,7 @@ func (self *Surface) Restore() { C.cairo_restore(self.context) }
 
 func (self *Surface) PushGroup() { C.cairo_push_group(self.context) }
 
-func (self *Surface) PushGroupWithContent(content_t int) {
+func (self *Surface) PushGroupWithContent(content_t Conent) {
 	C.cairo_push_group_with_content(self.context, C.cairo_content_t(content_t))
 }
 
@@ -300,7 +317,7 @@ func (self *Surface) PopGroup() (pattern *Pattern) {
 
 func (self *Surface) PopGroupToSource() { C.cairo_pop_group_to_source(self.context) }
 
-func (self *Surface) SetOperator(operator_t int) {
+func (self *Surface) SetOperator(operator_t Operator) {
 	C.cairo_set_operator(self.context, C.cairo_operator_t(operator_t))
 }
 
@@ -324,11 +341,11 @@ func (self *Surface) SetTolerance(tolerance float64) {
 	C.cairo_set_tolerance(self.context, C.double(tolerance))
 }
 
-func (self *Surface) SetAntialias(antialias_t int) {
+func (self *Surface) SetAntialias(antialias_t Antialias) {
 	C.cairo_set_antialias(self.context, C.cairo_antialias_t(antialias_t))
 }
 
-func (self *Surface) SetFillRule(fill_rule_t int) {
+func (self *Surface) SetFillRule(fill_rule_t FillRule) {
 	C.cairo_set_fill_rule(self.context, C.cairo_fill_rule_t(fill_rule_t))
 }
 
@@ -336,11 +353,11 @@ func (self *Surface) SetLineWidth(width float64) {
 	C.cairo_set_line_width(self.context, C.double(width))
 }
 
-func (self *Surface) SetLineCap(line_cap_t int) {
+func (self *Surface) SetLineCap(line_cap_t LineCap) {
 	C.cairo_set_line_cap(self.context, C.cairo_line_cap_t(line_cap_t))
 }
 
-func (self *Surface) SetLineJoin(line_join_t int) {
+func (self *Surface) SetLineJoin(line_join_t LineJoin) {
 	C.cairo_set_line_join(self.context, C.cairo_line_join_t(line_join_t))
 }
 
@@ -575,3 +592,63 @@ func (self *Surface) WriteToPNG(filename string) {
 }
 
 func (self *Surface) destroy() { C.cairo_surface_destroy(self.surface) }
+
+// Erik:
+
+func (self *Surface) Flush() {
+	C.cairo_surface_flush(self.surface)
+}
+
+func (self *Surface) MarkDirty() {
+	C.cairo_surface_mark_dirty(self.surface)
+}
+
+func (self *Surface) MarkDirtyRectangle(x, y, width, height int) {
+	C.cairo_surface_mark_dirty_rectangle(self.surface, C.int(x), C.int(y), C.int(width), C.int(height))
+}
+
+// GetData returns a copy of the surfaces raw pixel data.
+// This method also calls Flush.
+func (self *Surface) GetData() []byte {
+	self.Flush()
+	dataPtr := C.cairo_image_surface_get_data(self.surface)
+	if dataPtr == nil {
+		panic("cairo.Surface.GetData(): can't access surface pixel data")
+	}
+	stride := C.cairo_image_surface_get_stride(self.surface)
+	height := C.cairo_image_surface_get_height(self.surface)
+	return C.GoBytes(unsafe.Pointer(dataPtr), stride*height)
+}
+
+// SetData sets the surfaces raw pixel data.
+// This method also calls Flush and MarkDirty.
+func (self *Surface) SetData(data []byte) {
+	self.Flush()
+	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(self.surface))
+	if dataPtr == nil {
+		panic("cairo.Surface.SetData(): can't access surface pixel data")
+	}
+	stride := C.cairo_image_surface_get_stride(self.surface)
+	height := C.cairo_image_surface_get_height(self.surface)
+	if len(data) != int(stride*height) {
+		panic("cairo.Surface.SetData(): invalid data size")
+	}
+	C.memcpy(dataPtr, unsafe.Pointer(&data[0]), C.size_t(stride*height))
+	self.MarkDirty()
+}
+
+func (self *Surface) GetFormat() Format {
+	return Format(C.cairo_image_surface_get_format(self.surface))
+}
+
+func (self *Surface) GetWidth() int {
+	return int(C.cairo_image_surface_get_width(self.surface))
+}
+
+func (self *Surface) GetHeight() int {
+	return int(C.cairo_image_surface_get_height(self.surface))
+}
+
+func (self *Surface) GetStride() int {
+	return int(C.cairo_image_surface_get_stride(self.surface))
+}
