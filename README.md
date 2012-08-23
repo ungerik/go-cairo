@@ -11,6 +11,7 @@ Go specific extensions:
 * Surface.SetImage(image.Image)
 
 
+Copyrights:
 	cairo - a vector graphics library with display and print output
 	
 	Copyright © 2002 University of Southern California
