@@ -4,7 +4,11 @@
 
 Based on Dethe Elza's version https://bitbucket.org/dethe/gocairo
 
-Updated for Go 1
+Go specific extensions:
+* Surface.GetData() []byte
+* Surface.SetData([]byte)
+* Surface.GetImage() image.Image
+* Surface.SetImage(image.Image)
 
 
 	cairo - a vector graphics library with display and print output
