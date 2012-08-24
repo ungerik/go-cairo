@@ -44,7 +44,11 @@ package cairo
 import "C"
 
 import (
+	"image"
+	"image/draw"
 	"unsafe"
+
+	"github.com/ungerik/go-cairo/extimage"
 )
 
 // Golang struct to hold both a cairo surface and a cairo context
@@ -56,6 +60,19 @@ type Surface struct {
 func NewSurface(format Format, width, height int) *Surface {
 	s := C.cairo_image_surface_create(C.cairo_format_t(format), C.int(width), C.int(height))
 	return &Surface{surface: s, context: C.cairo_create(s)}
+}
+
+func NewSurfaceFromImage(img image.Image) *Surface {
+	format := FORMAT_ARGB32
+	switch img.(type) {
+	case *image.Alpha, *image.Alpha16:
+		format = FORMAT_A8
+	case *extimage.RGB, *image.Gray, *image.Gray16, *image.YCbCr:
+		format = FORMAT_RGB24
+	}
+	surface := NewSurface(format, img.Bounds().Dx(), img.Bounds().Dy())
+	surface.SetImage(img)
+	return surface
 }
 
 func (self *Surface) Save() {
@@ -583,4 +600,105 @@ func (self *Surface) GetStride() int {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Pattern creation functions
+// Pattern creation methods
+
+///////////////////////////////////////////////////////////////////////////////
+// image.Image methods
+
+func (self *Surface) GetImage() image.Image {
+	width := self.GetWidth()
+	height := self.GetHeight()
+	stride := self.GetStride()
+	data := self.GetData()
+
+	switch self.GetFormat() {
+	case FORMAT_ARGB32:
+		return &extimage.ARGB{
+			Pix:    data,
+			Stride: stride,
+			Rect:   image.Rect(0, 0, width, height),
+		}
+
+	case FORMAT_RGB24:
+		return &extimage.RGB{
+			Pix:    data,
+			Stride: stride,
+			Rect:   image.Rect(0, 0, width, height),
+		}
+
+	case FORMAT_A8:
+		return &image.Alpha{
+			Pix:    data,
+			Stride: stride,
+			Rect:   image.Rect(0, 0, width, height),
+		}
+
+	case FORMAT_A1:
+		panic("Unsuppored surface format cairo.FORMAT_A1")
+
+	case FORMAT_RGB16_565:
+		panic("Unsuppored surface format cairo.FORMAT_RGB16_565")
+
+	case FORMAT_RGB30:
+		panic("Unsuppored surface format cairo.FORMAT_RGB30")
+
+	case FORMAT_INVALID:
+		panic("Invalid surface format")
+	}
+	panic("Unknown surface format")
+}
+
+// SetImage set the data from an image.Image with identical size.
+func (self *Surface) SetImage(img image.Image) {
+	width := self.GetWidth()
+	height := self.GetHeight()
+	stride := self.GetStride()
+
+	switch self.GetFormat() {
+	case FORMAT_ARGB32:
+		if i, ok := img.(*extimage.ARGB); ok {
+			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
+				self.SetData(i.Pix)
+				return
+			}
+		}
+		surfImg := self.GetImage().(*extimage.ARGB)
+		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
+		self.SetData(surfImg.Pix)
+
+	case FORMAT_RGB24:
+		if i, ok := img.(*extimage.RGB); ok {
+			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
+				self.SetData(i.Pix)
+				return
+			}
+		}
+		surfImg := self.GetImage().(*extimage.RGB)
+		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
+		self.SetData(surfImg.Pix)
+
+	case FORMAT_A8:
+		if i, ok := img.(*image.Alpha); ok {
+			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
+				self.SetData(i.Pix)
+				return
+			}
+		}
+		surfImg := self.GetImage().(*image.Alpha)
+		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
+		self.SetData(surfImg.Pix)
+
+	case FORMAT_A1:
+		panic("Unsuppored surface format cairo.FORMAT_A1")
+
+	case FORMAT_RGB16_565:
+		panic("Unsuppored surface format cairo.FORMAT_RGB16_565")
+
+	case FORMAT_RGB30:
+		panic("Unsuppored surface format cairo.FORMAT_RGB30")
+
+	case FORMAT_INVALID:
+		panic("Invalid surface format")
+	}
+	panic("Unknown surface format")
+}

@@ -281,13 +281,13 @@ func (self Format) StrideForWidth(width int) int {
 
 // cairo_format_t values
 const (
-	FORMAT_INVALID   = -1
-	FORMAT_ARGB32    = 0
-	FORMAT_RGB24     = 1
-	FORMAT_A8        = 2
-	FORMAT_A1        = 3
-	FORMAT_RGB16_565 = 4
-	FORMAT_RGB30     = 5
+	FORMAT_INVALID   Format = -1
+	FORMAT_ARGB32    Format = 0
+	FORMAT_RGB24     Format = 1
+	FORMAT_A8        Format = 2
+	FORMAT_A1        Format = 3
+	FORMAT_RGB16_565 Format = 4
+	FORMAT_RGB30     Format = 5
 )
 
 // cairo_pattern_type_t
