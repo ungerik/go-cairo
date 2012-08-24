@@ -17,7 +17,7 @@ implementations for 32 bit ARGB and 24 bit RGB color models.
 
 Overview:
 * http://go.pkgdoc.org/github.com/ungerik/go-cairo
-* http://go.pkgdoc.org/github.com/ungerik/go-cairo/extimageb
+* http://go.pkgdoc.org/github.com/ungerik/go-cairo/extimage
 
 Copyrights:
 
