@@ -1,6 +1,6 @@
 ##go-cairo
 
-###Go wrapper for the cairo graphics library
+###Go binding for the cairo graphics library
 
 Based on Dethe Elza's version https://bitbucket.org/dethe/gocairo
 but significantly extended and updated.
