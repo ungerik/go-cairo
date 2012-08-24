@@ -15,6 +15,9 @@ Go specific extensions:
 go-cairo also sports a sub package extimage with image.Image/draw.Image
 implementations for 32 bit ARGB and 24 bit RGB color models.
 
+Overview:
+* http://go.pkgdoc.org/github.com/ungerik/go-cairo
+* http://go.pkgdoc.org/github.com/ungerik/go-cairo/extimageb
 
 Copyrights:
 
