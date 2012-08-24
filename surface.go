@@ -62,6 +62,13 @@ func NewSurface(format Format, width, height int) *Surface {
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+func NewSurfaceFromPNG(filename string) *Surface {
+	cs := C.CString(filename)
+	defer C.free(unsafe.Pointer(cs))
+	s := C.cairo_image_surface_create_from_png(cs)
+	return &Surface{surface: s, context: C.cairo_create(s)}
+}
+
 func NewSurfaceFromImage(img image.Image) *Surface {
 	format := FORMAT_ARGB32
 	switch img.(type) {
