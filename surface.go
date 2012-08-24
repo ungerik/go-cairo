@@ -38,7 +38,9 @@ cairo - a vector graphics library with display and print output
 package cairo
 
 // #cgo pkg-config: cairo
-// #include <cairo/cairo.h>
+// #include <cairo/cairo-pdf.h>
+// #include <cairo/cairo-ps.h>
+// #include <cairo/cairo-svg.h>
 // #include <stdlib.h>
 // #include <string.h>
 import "C"
@@ -80,6 +82,30 @@ func NewSurfaceFromImage(img image.Image) *Surface {
 	surface := NewSurface(format, img.Bounds().Dx(), img.Bounds().Dy())
 	surface.SetImage(img)
 	return surface
+}
+
+func NewPDFSurface(filename string, widthInPoints, heightInPoints float64, version PDFVersion) *Surface {
+	cs := C.CString(filename)
+	defer C.free(unsafe.Pointer(cs))
+	s := C.cairo_pdf_surface_create(cs, C.double(widthInPoints), C.double(heightInPoints))
+	C.cairo_pdf_surface_restrict_to_version(s, C.cairo_pdf_version_t(version))
+	return &Surface{surface: s, context: C.cairo_create(s)}
+}
+
+func NewPSSurface(filename string, widthInPoints, heightInPoints float64, level PSLevel) *Surface {
+	cs := C.CString(filename)
+	defer C.free(unsafe.Pointer(cs))
+	s := C.cairo_ps_surface_create(cs, C.double(widthInPoints), C.double(heightInPoints))
+	C.cairo_ps_surface_restrict_to_level(s, C.cairo_ps_level_t(level))
+	return &Surface{surface: s, context: C.cairo_create(s)}
+}
+
+func NewSVGSurface(filename string, widthInPoints, heightInPoints float64, version SVGVersion) *Surface {
+	cs := C.CString(filename)
+	defer C.free(unsafe.Pointer(cs))
+	s := C.cairo_svg_surface_create(cs, C.double(widthInPoints), C.double(heightInPoints))
+	C.cairo_svg_surface_restrict_to_version(s, C.cairo_svg_version_t(version))
+	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
 func (self *Surface) Save() {

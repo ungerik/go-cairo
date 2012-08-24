@@ -38,7 +38,9 @@ cairo - a vector graphics library with display and print output
 package cairo
 
 // #cgo pkg-config: cairo
-// #include <cairo/cairo.h>
+// #include <cairo/cairo-pdf.h>
+// #include <cairo/cairo-ps.h>
+// #include <cairo/cairo-svg.h>
 // #include <stdlib.h>
 // #include <string.h>
 import "C"
@@ -346,6 +348,39 @@ const (
 	MIME_TYPE_PNG  = "image/png"
 	MIME_TYPE_JP2  = "image/jp2"
 	MIME_TYPE_URI  = "text/x-uri"
+)
+
+type PDFVersion int
+
+func (self PDFVersion) String() string {
+	return C.GoString(C.cairo_pdf_version_to_string(C.cairo_pdf_version_t(self)))
+}
+
+const (
+	PDF_VERSION_1_4 PDFVersion = iota
+	PDF_VERSION_1_5
+)
+
+type PSLevel int
+
+func (self PSLevel) String() string {
+	return C.GoString(C.cairo_ps_level_to_string(C.cairo_ps_level_t(self)))
+}
+
+const (
+	PS_LEVEL_2 PSLevel = iota
+	PS_LEVEL_3
+)
+
+type SVGVersion int
+
+func (self SVGVersion) String() string {
+	return C.GoString(C.cairo_svg_version_to_string(C.cairo_svg_version_t(self)))
+}
+
+const (
+	SVG_VERSION_1_1 SVGVersion = iota
+	SVG_VERSION_1_2
 )
 
 type Matrix struct {
