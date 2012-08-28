@@ -1,6 +1,5 @@
 package cairo
 
-// #cgo pkg-config: cairo
 // #include <cairo/cairo-pdf.h>
 // #include <cairo/cairo-ps.h>
 // #include <cairo/cairo-svg.h>
@@ -161,11 +160,11 @@ func (self *Surface) Rotate(angle float64) {
 }
 
 func (self *Surface) Transform(matrix Matrix) {
-	C.cairo_transform(self.context, matrix.matrix)
+	C.cairo_transform(self.context, matrix.cairo_matrix_t())
 }
 
 func (self *Surface) SetMatrix(matrix Matrix) {
-	C.cairo_set_matrix(self.context, matrix.matrix)
+	C.cairo_set_matrix(self.context, matrix.cairo_matrix_t())
 }
 
 func (self *Surface) IdentityMatrix() {
@@ -368,33 +367,33 @@ func (self *Surface) SetFontSize(size float64) {
 }
 
 func (self *Surface) SetFontMatrix(matrix Matrix) {
-	C.cairo_set_font_matrix(self.context, matrix.matrix)
+	C.cairo_set_font_matrix(self.context, matrix.cairo_matrix_t())
 }
 
 func (self *Surface) SetFontOptions(fontOptions *FontOptions) {
-	// todo
+	panic("not implemented") // todo
 }
 
 func (self *Surface) GetFontOptions() *FontOptions {
-	// todo
+	panic("not implemented") // todo
 	return nil
 }
 
 func (self *Surface) SetFontFace(fontFace *FontFace) {
-	// todo
+	panic("not implemented") // todo
 }
 
 func (self *Surface) GetFontFace() *FontFace {
-	// todo
+	panic("not implemented") // todo
 	return nil
 }
 
 func (self *Surface) SetScaledFont(scaledFont *ScaledFont) {
-	// todo
+	panic("not implemented") // todo
 }
 
 func (self *Surface) GetScaledFont() *ScaledFont {
-	// todo
+	panic("not implemented") // todo
 	return nil
 }
 
@@ -405,7 +404,7 @@ func (self *Surface) ShowText(text string) {
 }
 
 func (self *Surface) ShowGlyphs(glyphs []Glyph) {
-	// todo
+	panic("not implemented") // todo
 }
 
 func (self *Surface) ShowTextGlyphs(text string, glyphs []Glyph, clusters []TextCluster, flags TextClusterFlag) {
@@ -418,23 +417,23 @@ func (self *Surface) TextPath(text string) {
 }
 
 func (self *Surface) GlyphPath(glyphs []Glyph) {
-	// todo
+	panic("not implemented") // todo
 }
 
 func (self *Surface) TextExtents(text string) *TextExtents {
-	//  todo 
+	panic("not implemented") // todo
 	//C.cairo_text_extents
 	return nil
 }
 
 func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
-	//  todo 
+	panic("not implemented") // todo
 	//C.cairo_text_extents
 	return nil
 }
 
 func (self *Surface) FontExtents() *FontExtents {
-	//  todo 
+	panic("not implemented") // todo
 	//C.cairo_text_extents
 	return nil
 }
@@ -470,7 +469,7 @@ func (self *Surface) Destroy() {
 
 func (self *Surface) GetDevice() *Device {
 	//C.cairo_surface_get_device
-	// todo
+	panic("not implemented") // todo
 	return nil
 }
 

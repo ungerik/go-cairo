@@ -19,4 +19,12 @@ Overview:
 * http://go.pkgdoc.org/github.com/ungerik/go-cairo
 * http://go.pkgdoc.org/github.com/ungerik/go-cairo/extimage
 
+Missing features
+* TextCluster
+* FontExtents
+* FontFace
+* FontOptions
+* ScaledFont
+* Glyph
+
 Copyrights: See LICENSE file

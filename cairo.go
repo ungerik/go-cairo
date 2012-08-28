@@ -8,10 +8,6 @@ package cairo
 // #include <string.h>
 import "C"
 
-import (
-// "unsafe"
-)
-
 // cairo_status_t
 type Status int
 
@@ -345,10 +341,6 @@ const (
 	SVG_VERSION_1_1 SVGVersion = iota
 	SVG_VERSION_1_2
 )
-
-type Matrix struct {
-	matrix *C.cairo_matrix_t
-}
 
 type Pattern struct {
 	pattern *C.cairo_pattern_t
