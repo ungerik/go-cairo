@@ -27,23 +27,24 @@ Missing features
 * ScaledFont
 * Glyph
 
-### Installation:
-
-1. Install cairo:
+### Install cairo:
 
 For Debian and Debian derivatives including Ubuntu:
-  sudo apt-get install libcairo2-dev
+	
+	sudo apt-get install libcairo2-dev
 
 For Fedora:
+
 	sudo yum install cairo-devel
 
 For openSUSE:
+	
 	zypper install cairo-devel
   
-2. Install go-cairo and run example:
+### Install go-cairo and run example:
 
-  go get github.com/ungerik/go-cairo
-  go install github.com/ungerik/go-cairo/example && example
+	go get github.com/ungerik/go-cairo
+	go install github.com/ungerik/go-cairo/example && example
 
 
 Copyrights: See LICENSE file
