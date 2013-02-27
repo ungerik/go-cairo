@@ -1,3 +1,4 @@
+// +build !goci
 package cairo
 
 // #include <cairo/cairo-pdf.h>
