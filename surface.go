@@ -422,9 +422,19 @@ func (self *Surface) GlyphPath(glyphs []Glyph) {
 }
 
 func (self *Surface) TextExtents(text string) *TextExtents {
-	panic("not implemented") // todo
-	//C.cairo_text_extents
-	return nil
+	cte := C.cairo_text_extents_t{}
+	cs := C.CString(text)
+	C.cairo_text_extents(self.context, cs, &cte)
+	C.free(unsafe.Pointer(cs))
+	te := &TextExtents{
+		Xbearing: float64(cte.x_bearing),
+		Ybearing: float64(cte.y_bearing),
+		Width:    float64(cte.width),
+		Height:   float64(cte.height),
+		Xadvance: float64(cte.x_advance),
+		Yadvance: float64(cte.y_advance),
+	}
+	return te
 }
 
 func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
