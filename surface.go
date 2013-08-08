@@ -422,9 +422,19 @@ func (self *Surface) GlyphPath(glyphs []Glyph) {
 }
 
 func (self *Surface) TextExtents(text string) *TextExtents {
-	panic("not implemented") // todo
-	//C.cairo_text_extents
-	return nil
+	cte := C.cairo_text_extents_t{}
+	cs := C.CString(text)
+	C.cairo_text_extents(self.context, cs, &cte)
+	C.free(unsafe.Pointer(cs))
+	te := &TextExtents{
+		Xbearing: float64(cte.x_bearing),
+		Ybearing: float64(cte.y_bearing),
+		Width:    float64(cte.width),
+		Height:   float64(cte.height),
+		Xadvance: float64(cte.x_advance),
+		Yadvance: float64(cte.y_advance),
+	}
+	return te
 }
 
 func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
@@ -609,6 +619,10 @@ func (self *Surface) GetImage() image.Image {
 
 	switch self.GetFormat() {
 	case FORMAT_ARGB32:
+		n := len(data)
+		for i := 0; i < n; i += 4 {
+			data[i], data[i+1], data[i+2], data[i+3] = data[i+3], data[i+2], data[i+1], data[i]
+		}
 		return &extimage.ARGB{
 			Pix:    data,
 			Stride: stride,
@@ -616,7 +630,11 @@ func (self *Surface) GetImage() image.Image {
 		}
 
 	case FORMAT_RGB24:
-		return &extimage.RGB{
+		n := len(data)
+		for i := 0; i < n; i += 4 {
+			data[i], data[i+1], data[i+2], data[i+3] = 255, data[i+2], data[i+1], data[i]
+		}
+		return &extimage.ARGB{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
