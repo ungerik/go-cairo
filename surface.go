@@ -609,6 +609,10 @@ func (self *Surface) GetImage() image.Image {
 
 	switch self.GetFormat() {
 	case FORMAT_ARGB32:
+		n := len(data)
+		for i := 0; i < n; i += 4 {
+			data[i], data[i+1], data[i+2], data[i+3] = data[i+3], data[i+2], data[i+1], data[i]
+		}
 		return &extimage.ARGB{
 			Pix:    data,
 			Stride: stride,
@@ -616,7 +620,11 @@ func (self *Surface) GetImage() image.Image {
 		}
 
 	case FORMAT_RGB24:
-		return &extimage.RGB{
+		n := len(data)
+		for i := 0; i < n; i += 4 {
+			data[i], data[i+1], data[i+2], data[i+3] = 255, data[i+2], data[i+1], data[i]
+		}
+		return &extimage.ARGB{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
