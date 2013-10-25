@@ -29,7 +29,7 @@ Missing features
 
 ### Installation:
 
-1. Install cairo:
+Install cairo:
 
 For Debian and Debian derivatives including Ubuntu:
 
@@ -43,9 +43,10 @@ For openSUSE:
 
 	zypper install cairo-devel
   
-2. Install go-cairo and run example:
+Install go-cairo and run example:
 
 	go get github.com/ungerik/go-cairo
 	go install github.com/ungerik/go-cairo/example && example
+
 
 Copyrights: See LICENSE file
