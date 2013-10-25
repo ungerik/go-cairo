@@ -27,6 +27,13 @@ func NewSurface(format Format, width, height int) *Surface {
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+// NewSurfaceFromC creates a new surface from C data types.
+// This is useful, if you already obtained a surface by
+// using a C library, for example an XCB surface.
+func NewSurfaceFromC(s *C.cairo_surface_t, c *C.cairo_t) *Surface {
+	return &Surface{surface: s, context: c}
+}
+
 func NewSurfaceFromPNG(filename string) *Surface {
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
