@@ -42,12 +42,14 @@ func NewSurfaceFromPNG(filename string) *Surface {
 }
 
 func NewSurfaceFromImage(img image.Image) *Surface {
-	format := FORMAT_ARGB32
+	var format Format
 	switch img.(type) {
 	case *image.Alpha, *image.Alpha16:
 		format = FORMAT_A8
-	case *extimage.RGB, *image.Gray, *image.Gray16, *image.YCbCr:
+	case *extimage.BGRN, *image.Gray, *image.Gray16, *image.YCbCr:
 		format = FORMAT_RGB24
+	default:
+		format = FORMAT_ARGB32
 	}
 	surface := NewSurface(format, img.Bounds().Dx(), img.Bounds().Dy())
 	surface.SetImage(img)
@@ -626,22 +628,14 @@ func (self *Surface) GetImage() image.Image {
 
 	switch self.GetFormat() {
 	case FORMAT_ARGB32:
-		n := len(data)
-		for i := 0; i < n; i += 4 {
-			data[i], data[i+1], data[i+2], data[i+3] = data[i+3], data[i+2], data[i+1], data[i]
-		}
-		return &extimage.ARGB{
+		return &extimage.BGRA{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
 		}
 
 	case FORMAT_RGB24:
-		n := len(data)
-		for i := 0; i < n; i += 4 {
-			data[i], data[i+1], data[i+2], data[i+3] = 255, data[i+2], data[i+1], data[i]
-		}
-		return &extimage.ARGB{
+		return &extimage.BGRN{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
@@ -677,24 +671,24 @@ func (self *Surface) SetImage(img image.Image) {
 
 	switch self.GetFormat() {
 	case FORMAT_ARGB32:
-		if i, ok := img.(*extimage.ARGB); ok {
+		if i, ok := img.(*extimage.BGRA); ok {
 			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
 				self.SetData(i.Pix)
 				return
 			}
 		}
-		surfImg := self.GetImage().(*extimage.ARGB)
+		surfImg := self.GetImage().(*extimage.BGRA)
 		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
 		self.SetData(surfImg.Pix)
 
 	case FORMAT_RGB24:
-		if i, ok := img.(*extimage.RGB); ok {
+		if i, ok := img.(*extimage.BGRN); ok {
 			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
 				self.SetData(i.Pix)
 				return
 			}
 		}
-		surfImg := self.GetImage().(*extimage.RGB)
+		surfImg := self.GetImage().(*extimage.BGRN)
 		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
 		self.SetData(surfImg.Pix)
 
