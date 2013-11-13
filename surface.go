@@ -1,3 +1,4 @@
+// +build !goci
 package cairo
 
 // #include <cairo/cairo-pdf.h>
@@ -26,6 +27,13 @@ func NewSurface(format Format, width, height int) *Surface {
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+// NewSurfaceFromC creates a new surface from C data types.
+// This is useful, if you already obtained a surface by
+// using a C library, for example an XCB surface.
+func NewSurfaceFromC(s *C.cairo_surface_t, c *C.cairo_t) *Surface {
+	return &Surface{surface: s, context: c}
+}
+
 func NewSurfaceFromPNG(filename string) *Surface {
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
@@ -34,12 +42,14 @@ func NewSurfaceFromPNG(filename string) *Surface {
 }
 
 func NewSurfaceFromImage(img image.Image) *Surface {
-	format := FORMAT_ARGB32
+	var format Format
 	switch img.(type) {
 	case *image.Alpha, *image.Alpha16:
 		format = FORMAT_A8
-	case *extimage.RGB, *image.Gray, *image.Gray16, *image.YCbCr:
+	case *extimage.BGRN, *image.Gray, *image.Gray16, *image.YCbCr:
 		format = FORMAT_RGB24
+	default:
+		format = FORMAT_ARGB32
 	}
 	surface := NewSurface(format, img.Bounds().Dx(), img.Bounds().Dy())
 	surface.SetImage(img)
@@ -421,9 +431,19 @@ func (self *Surface) GlyphPath(glyphs []Glyph) {
 }
 
 func (self *Surface) TextExtents(text string) *TextExtents {
-	panic("not implemented") // todo
-	//C.cairo_text_extents
-	return nil
+	cte := C.cairo_text_extents_t{}
+	cs := C.CString(text)
+	C.cairo_text_extents(self.context, cs, &cte)
+	C.free(unsafe.Pointer(cs))
+	te := &TextExtents{
+		Xbearing: float64(cte.x_bearing),
+		Ybearing: float64(cte.y_bearing),
+		Width:    float64(cte.width),
+		Height:   float64(cte.height),
+		Xadvance: float64(cte.x_advance),
+		Yadvance: float64(cte.y_advance),
+	}
+	return te
 }
 
 func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
@@ -608,14 +628,14 @@ func (self *Surface) GetImage() image.Image {
 
 	switch self.GetFormat() {
 	case FORMAT_ARGB32:
-		return &extimage.ARGB{
+		return &extimage.BGRA{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
 		}
 
 	case FORMAT_RGB24:
-		return &extimage.RGB{
+		return &extimage.BGRN{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
@@ -651,24 +671,24 @@ func (self *Surface) SetImage(img image.Image) {
 
 	switch self.GetFormat() {
 	case FORMAT_ARGB32:
-		if i, ok := img.(*extimage.ARGB); ok {
+		if i, ok := img.(*extimage.BGRA); ok {
 			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
 				self.SetData(i.Pix)
 				return
 			}
 		}
-		surfImg := self.GetImage().(*extimage.ARGB)
+		surfImg := self.GetImage().(*extimage.BGRA)
 		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
 		self.SetData(surfImg.Pix)
 
 	case FORMAT_RGB24:
-		if i, ok := img.(*extimage.RGB); ok {
+		if i, ok := img.(*extimage.BGRN); ok {
 			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
 				self.SetData(i.Pix)
 				return
 			}
 		}
-		surfImg := self.GetImage().(*extimage.RGB)
+		surfImg := self.GetImage().(*extimage.BGRN)
 		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
 		self.SetData(surfImg.Pix)
 
