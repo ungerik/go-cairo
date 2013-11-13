@@ -43,10 +43,10 @@ For openSUSE:
 
 	zypper install cairo-devel
   
-Install go-cairo and run example:
+Install go-cairo and run go-cairo-example:
 
 	go get github.com/ungerik/go-cairo
-	go install github.com/ungerik/go-cairo/example && example
+	go install github.com/ungerik/go-cairo/go-cairo-example && go-cairo-example
 
 
 Copyrights: See LICENSE file
