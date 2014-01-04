@@ -50,3 +50,7 @@ Install go-cairo and run go-cairo-example:
 
 
 Copyrights: See LICENSE file
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ungerik/go-cairo/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
