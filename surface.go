@@ -191,6 +191,16 @@ func (self *Surface) UserToDeviceDistance(dx, dy float64) (float64, float64) {
 	return dx, dy
 }
 
+func (self *Surface) DeviceToUser(x, y float64) (float64, float64) {
+	C.cairo_device_to_user(self.context, (*C.double)(&x), (*C.double)(&y))
+	return x, y
+}
+
+func (self *Surface) DeviceToUserDistance(x, y float64) (float64, float64) {
+	C.cairo_device_to_user_distance(self.context, (*C.double)(&x), (*C.double)(&y))
+	return x, y
+}
+
 // path creation methods
 
 func (self *Surface) NewPath() {
