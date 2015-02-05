@@ -714,6 +714,8 @@ func (self *Surface) SetImage(img image.Image) {
 
 	case FORMAT_INVALID:
 		panic("Invalid surface format")
+
+	default:
+		panic("Unknown surface format")
 	}
-	panic("Unknown surface format")
 }
