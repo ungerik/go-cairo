@@ -34,11 +34,37 @@ func NewSurfaceFromC(s *C.cairo_surface_t, c *C.cairo_t) *Surface {
 	return &Surface{surface: s, context: c}
 }
 
-func NewSurfaceFromPNG(filename string) *Surface {
-	cs := C.CString(filename)
-	defer C.free(unsafe.Pointer(cs))
-	s := C.cairo_image_surface_create_from_png(cs)
-	return &Surface{surface: s, context: C.cairo_create(s)}
+func NewSurfaceFromPNG(filename string) (*Surface, Status) {
+
+	cstr := C.CString(filename)
+	defer C.free(unsafe.Pointer(cstr))
+
+	surfaceNative := C.cairo_image_surface_create_from_png(cstr)
+	status := Status(C.cairo_surface_status(surfaceNative))
+	if status != STATUS_SUCCESS {
+		return nil, status
+	}
+
+	contextNative := C.cairo_create(surfaceNative)
+	status = Status(C.cairo_status(contextNative))
+	if status != STATUS_SUCCESS {
+		return nil, status
+	}
+
+	surface := &Surface{
+		surface: surfaceNative,
+		context: contextNative,
+	}
+
+	return surface, STATUS_SUCCESS
+}
+
+func (self *Surface) Native() (surface, context uintptr) {
+
+	surface = uintptr(unsafe.Pointer(self.surface))
+	context = uintptr(unsafe.Pointer(self.context))
+
+	return
 }
 
 func NewSurfaceFromImage(img image.Image) *Surface {
@@ -519,10 +545,12 @@ func (self *Surface) GetContent() Content {
 	return Content(C.cairo_surface_get_content(self.surface))
 }
 
-func (self *Surface) WriteToPNG(filename string) {
+func (self *Surface) WriteToPNG(filename string) Status {
+
 	cs := C.CString(filename)
-	C.cairo_surface_write_to_png(self.surface, cs)
-	C.free(unsafe.Pointer(cs))
+	defer C.free(unsafe.Pointer(cs))
+
+	return Status(C.cairo_surface_write_to_png(self.surface, cs))
 }
 
 // Already implemented via context split context/surface?
