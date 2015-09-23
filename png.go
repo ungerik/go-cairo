@@ -1,6 +1,6 @@
 package cairo
 
-// #cgo CFLAGS: -std=c11 -Wall -O2
+// #cgo CFLAGS: -Wall -O2
 // #cgo pkg-config: cairo
 // #include <stdio.h>
 // #include <stdlib.h>
