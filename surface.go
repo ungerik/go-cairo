@@ -16,10 +16,13 @@ import (
 	"github.com/ungerik/go-cairo/extimage"
 )
 
+type Cairo_surface *C.cairo_surface_t
+type Cairo_context *C.cairo_t
+
 // Golang struct to hold both a cairo surface and a cairo context
 type Surface struct {
-	surface *C.cairo_surface_t
-	context *C.cairo_t
+	surface Cairo_surface
+	context Cairo_context
 }
 
 func NewSurface(format Format, width, height int) *Surface {
@@ -30,7 +33,7 @@ func NewSurface(format Format, width, height int) *Surface {
 // NewSurfaceFromC creates a new surface from C data types.
 // This is useful, if you already obtained a surface by
 // using a C library, for example an XCB surface.
-func NewSurfaceFromC(s *C.cairo_surface_t, c *C.cairo_t) *Surface {
+func NewSurfaceFromC(s Cairo_surface, c Cairo_context) *Surface {
 	return &Surface{surface: s, context: c}
 }
 

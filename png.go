@@ -4,7 +4,7 @@ package cairo
 // #cgo pkg-config: cairo
 // #include <stdio.h>
 // #include <stdlib.h>
-// #include <strings.h>
+// #include <string.h>
 // #include <cairo.h>
 //
 // #define GO_CAIRO_VECTOR_INIT_SIZE 64
