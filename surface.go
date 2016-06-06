@@ -523,6 +523,7 @@ func (self *Surface) Finish() {
 }
 
 func (self *Surface) Destroy() {
+	C.cairo_destroy(self.context)
 	C.cairo_surface_destroy(self.surface)
 }
 
