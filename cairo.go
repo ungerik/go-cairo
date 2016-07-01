@@ -313,7 +313,8 @@ const (
 type PDFVersion int
 
 func (self PDFVersion) String() string {
-	return C.GoString(C.cairo_pdf_version_to_string(C.cairo_pdf_version_t(self)))
+	return "1"
+	//C.GoString(C.cairo_pdf_version_to_string(C.cairo_pdf_version_t(self)))
 }
 
 const (
