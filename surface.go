@@ -89,7 +89,7 @@ func NewPDFSurface(filename string, widthInPoints, heightInPoints float64, versi
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
 	s := C.cairo_pdf_surface_create(cs, C.double(widthInPoints), C.double(heightInPoints))
-	C.cairo_pdf_surface_restrict_to_version(s, C.cairo_pdf_version_t(version))
+	//	C.cairo_pdf_surface_restrict_to_version(s, C.cairo_pdf_version_t(version))
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
@@ -509,7 +509,7 @@ func (self *Surface) Status() Status {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Surface manipulation
-
+/*
 func (self *Surface) CreateForRectangle(x, y, width, height float64) *Surface {
 	return &Surface{
 		context: self.context,
@@ -517,7 +517,7 @@ func (self *Surface) CreateForRectangle(x, y, width, height float64) *Surface {
 			C.double(x), C.double(y), C.double(width), C.double(height)),
 	}
 }
-
+*/
 func (self *Surface) Finish() {
 	C.cairo_surface_finish(self.surface)
 }
