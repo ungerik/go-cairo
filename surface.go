@@ -109,6 +109,24 @@ func NewSVGSurface(filename string, widthInPoints, heightInPoints float64, versi
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+func (self *Surface) GetCurrentPoint() (float64, float64) {
+	if !self.HasCurrentPoint() {
+		return 0, 0
+	}
+	x := C.double(0)
+	y := C.double(0)
+	C.cairo_get_current_point(self.context, &x, &y)
+	if self.GetStatus() != STATUS_SUCCESS {
+		// May not need to panic here. Per cairo spec, if status is error, return 0, 0, which this will do.
+		panic("cairo.Surface.GetCurrentPoint() unable to get current point.")
+	}
+	return float64(x), float64(y)
+}
+
+func (self *Surface) HasCurrentPoint() bool {
+	return C.cairo_has_current_point(self.context) != 0
+}
+
 func (self *Surface) Save() {
 	C.cairo_save(self.context)
 }
