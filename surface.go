@@ -443,7 +443,6 @@ func (self *Surface) SetFontOptions(fontOptions *FontOptions) {
 
 func (self *Surface) GetFontOptions() *FontOptions {
 	panic("not implemented") // todo
-	return nil
 }
 
 func (self *Surface) SetFontFace(fontFace *FontFace) {
@@ -452,7 +451,6 @@ func (self *Surface) SetFontFace(fontFace *FontFace) {
 
 func (self *Surface) GetFontFace() *FontFace {
 	panic("not implemented") // todo
-	return nil
 }
 
 func (self *Surface) SetScaledFont(scaledFont *ScaledFont) {
@@ -461,7 +459,6 @@ func (self *Surface) SetScaledFont(scaledFont *ScaledFont) {
 
 func (self *Surface) GetScaledFont() *ScaledFont {
 	panic("not implemented") // todo
-	return nil
 }
 
 func (self *Surface) ShowText(text string) {
@@ -506,13 +503,11 @@ func (self *Surface) TextExtents(text string) *TextExtents {
 func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
 	panic("not implemented") // todo
 	//C.cairo_text_extents
-	return nil
 }
 
 func (self *Surface) FontExtents() *FontExtents {
 	panic("not implemented") // todo
 	//C.cairo_text_extents
-	return nil
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -548,7 +543,6 @@ func (self *Surface) Destroy() {
 func (self *Surface) GetDevice() *Device {
 	//C.cairo_surface_get_device
 	panic("not implemented") // todo
-	return nil
 }
 
 func (self *Surface) GetReferenceCount() int {
@@ -676,6 +670,27 @@ func (self *Surface) GetStride() int {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Pattern creation methods
+
+func CreateLinearGradient(x0, y0, x1, y1 float64) *Pattern {
+	p := C.cairo_pattern_create_linear(C.double(x0), C.double(y0), C.double(x1), C.double(y1))
+	return &Pattern{p}
+}
+
+func CreateRadialGradient(cx0, cy0, radius0, cx1, cy1, radius1 float64) *Pattern {
+	p := C.cairo_pattern_create_radial(
+		C.double(cx0), C.double(cy0), C.double(radius0),
+		C.double(cx1), C.double(cy1), C.double(radius1),
+	)
+	return &Pattern{p}
+}
+
+func (pattern *Pattern) AddColorStopRGB(offset, red, green, blue float64) {
+	C.cairo_pattern_add_color_stop_rgb(pattern.pattern, C.double(offset), C.double(red), C.double(green), C.double(blue))
+}
+
+func (pattern *Pattern) AddColorStopRGBA(offset, red, green, blue, alpha float64) {
+	C.cairo_pattern_add_color_stop_rgba(pattern.pattern, C.double(offset), C.double(red), C.double(green), C.double(blue), C.double(alpha))
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // image.Image methods
