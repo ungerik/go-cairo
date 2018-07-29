@@ -1,5 +1,3 @@
-// +build !goci
-
 package cairo
 
 // #include <cairo/cairo-pdf.h>
@@ -171,6 +169,11 @@ func (s *Surface) SetOperator(operator Operator) {
 // SetSource sets the pattern to draw with.
 func (s *Surface) SetSource(pattern *Pattern) {
 	C.cairo_set_source(s.context, pattern.pattern)
+}
+
+// GetSource gets the current pattern being used.
+func (s *Surface) GetSource() *Pattern {
+	return &Pattern{C.cairo_get_source(s.context)}
 }
 
 // SetSourceRGB sets the r, g, b values to draw with.

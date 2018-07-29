@@ -248,7 +248,7 @@ const (
 // Format cairo_format_t
 type Format int
 
-// StrideForWidth ...
+// StrideForWidth provides a stride value that will respect all alignment requirements of the accelerated image-rendering code within cairo
 func (f Format) StrideForWidth(width int) int {
 	return int(C.cairo_format_stride_for_width(C.cairo_format_t(f), C.int(width)))
 }
@@ -288,7 +288,7 @@ const (
 	CairoFilterGaussian
 )
 
-// RegionOverlap ...
+// RegionOverlap Used as the return value for cairo_region_contains_rectangle().
 type RegionOverlap int
 
 // RegionOverlap constants
@@ -298,7 +298,7 @@ const (
 	RegionOverlapPart
 )
 
-// DeviceType ...
+// DeviceType cairo_device_t
 type DeviceType int
 
 // DeviceType constants
@@ -319,7 +319,7 @@ const (
 	MimeTypeURI  = "text/x-uri"
 )
 
-// PDFVersion ...
+// PDFVersion version of PDF created
 type PDFVersion int
 
 func (v PDFVersion) String() string {
@@ -332,7 +332,7 @@ const (
 	PDFVersion15
 )
 
-// PSLevel ...
+// PSLevel PostScript level
 type PSLevel int
 
 func (p PSLevel) String() string {
@@ -345,7 +345,7 @@ const (
 	PSLevel3
 )
 
-// SVGVersion ...
+// SVGVersion SVG Version
 type SVGVersion int
 
 func (v SVGVersion) String() string {
@@ -358,18 +358,18 @@ const (
 	SVGVersion12
 )
 
-// Rectangle ...
+// Rectangle rectangle struct
 type Rectangle struct {
 	X, Y          float64
 	Width, Height float64
 }
 
-// TextCluster ...
+// TextCluster cairo_text_cluster_t
 type TextCluster struct {
 	// todo
 }
 
-// TextExtents ...
+// TextExtents cairo_text_extents_t
 type TextExtents struct {
 	Xbearing float64
 	Ybearing float64
@@ -379,41 +379,41 @@ type TextExtents struct {
 	Yadvance float64
 }
 
-// FontExtents ...
+// FontExtents cairo_font_extents_t
 type FontExtents struct {
 	// todo
 }
 
-// FontFace ...
+// FontFace cairo_font_face_t
 type FontFace struct {
 	// todo
 }
 
-// FontOptions ...
+// FontOptions cairo_font_options_t
 type FontOptions struct {
 	// todo
 }
 
-// ScaledFont ...
+// ScaledFont cairo_scaled_font_t
 type ScaledFont struct {
 	// todo
 }
 
-// Glyph ...
+// Glyph cairo_glyph_t
 type Glyph struct {
 	// todo
 }
 
-// Device ...
+// Device cairo_device_t
 type Device struct {
 }
 
-// Version ...
+// Version cairo_version
 func Version() int {
 	return int(C.cairo_version())
 }
 
-// VersionString ...
+// VersionString cairo_version_string
 func VersionString() string {
 	return C.GoString(C.cairo_version_string())
 }
