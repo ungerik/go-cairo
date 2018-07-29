@@ -42,17 +42,15 @@ For openSUSE:
 
 	zypper install cairo-devel
 	
-For MacOS:
-HomeBrew:
+For MacOS HomeBrew:
 
 	brew install cairo
 
-MacPorts:
+For MacOS MacPorts:
 
 	sudo port install cairo
 
-Windows:
-Install gtk:
+For Windows, install gtk:
 
 	http://www.gtk.org/download/
 
