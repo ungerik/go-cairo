@@ -5,6 +5,9 @@
 Based on Dethe Elza's version https://bitbucket.org/dethe/gocairo
 but significantly extended and updated.
 
+Forked from Erik Unger's version https://github.com/ungerik/go-cairo
+but extended and updated a bit more.
+
 Go specific extensions:
 * NewSurfaceFromImage(image.Image)
 * Surface.GetData() []byte
@@ -14,10 +17,6 @@ Go specific extensions:
 
 go-cairo also sports a sub package extimage with image.Image/draw.Image
 implementations for 32 bit ARGB and 24 bit RGB color models.
-
-Overview:
-* http://go.pkgdoc.org/github.com/ungerik/go-cairo
-* http://go.pkgdoc.org/github.com/ungerik/go-cairo/extimage
 
 Missing features
 * TextCluster
@@ -42,15 +41,23 @@ For Fedora:
 For openSUSE:
 
 	zypper install cairo-devel
-  
+	
+For MacOS:
+HomeBrew:
+
+	brew install cairo
+
+MacPorts:
+
+	sudo port install cairo
+
+Windows:
+Install gtk:
+
+	http://www.gtk.org/download/
+
 Install go-cairo and run go-cairo-example:
 
-	go get github.com/ungerik/go-cairo
-	go install github.com/ungerik/go-cairo/go-cairo-example && go-cairo-example
-
+	go get github.com/bit101/go-cairo
 
 Copyrights: See LICENSE file
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ungerik/go-cairo/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
