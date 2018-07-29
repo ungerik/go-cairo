@@ -1,4 +1,3 @@
-// +build !goci
 package cairo
 
 // #include <cairo/cairo.h>
@@ -8,60 +7,80 @@ import (
 	"unsafe"
 )
 
+// Matrix struct
 type Matrix struct {
 	Xx, Yx float64
 	Xy, Yy float64
 	X0, Y0 float64
 }
 
-func (self *Matrix) cairo_matrix_t() *C.cairo_matrix_t {
-	return (*C.cairo_matrix_t)(unsafe.Pointer(self))
+// NewMatrix creates a new identiy matrix
+func NewMatrix() *Matrix {
+	matrix := Matrix{}
+	matrix.InitIdentity()
+	return &matrix
 }
 
-func (self *Matrix) InitIdendity() {
-	C.cairo_matrix_init_identity(self.cairo_matrix_t())
+// Native returns native c pointer to a matrix
+func (m *Matrix) Native() *C.cairo_matrix_t {
+	return (*C.cairo_matrix_t)(unsafe.Pointer(m))
 }
 
-func (self *Matrix) InitTranslate(tx, ty float64) {
-	C.cairo_matrix_init_translate(self.cairo_matrix_t(), C.double(tx), C.double(ty))
+// InitIdentity initializes this matrix to identity matrix
+func (m *Matrix) InitIdentity() {
+	C.cairo_matrix_init_identity(m.Native())
 }
 
-func (self *Matrix) InitScale(sx, sy float64) {
-	C.cairo_matrix_init_scale(self.cairo_matrix_t(), C.double(sx), C.double(sy))
+// InitTranslate initializes a matrix with the given translation
+func (m *Matrix) InitTranslate(tx, ty float64) {
+	C.cairo_matrix_init_translate(m.Native(), C.double(tx), C.double(ty))
 }
 
-func (self *Matrix) InitRotate(radians float64) {
-	C.cairo_matrix_init_rotate(self.cairo_matrix_t(), C.double(radians))
+// InitScale initializes a matrix with the give scale
+func (m *Matrix) InitScale(sx, sy float64) {
+	C.cairo_matrix_init_scale(m.Native(), C.double(sx), C.double(sy))
 }
 
-func (self *Matrix) Translate(tx, ty float64) {
-	C.cairo_matrix_translate(self.cairo_matrix_t(), C.double(tx), C.double(ty))
+// InitRotate initializes a matrix with the given rotation
+func (m *Matrix) InitRotate(radians float64) {
+	C.cairo_matrix_init_rotate(m.Native(), C.double(radians))
 }
 
-func (self *Matrix) Scale(sx, sy float64) {
-	C.cairo_matrix_scale(self.cairo_matrix_t(), C.double(sx), C.double(sy))
+// Translate translates a matrix by the given amount
+func (m *Matrix) Translate(tx, ty float64) {
+	C.cairo_matrix_translate(m.Native(), C.double(tx), C.double(ty))
 }
 
-func (self *Matrix) Rotate(radians float64) {
-	C.cairo_matrix_rotate(self.cairo_matrix_t(), C.double(radians))
+// Scale scales the matrix by the given amounts
+func (m *Matrix) Scale(sx, sy float64) {
+	C.cairo_matrix_scale(m.Native(), C.double(sx), C.double(sy))
 }
 
-func (self *Matrix) Invert() {
-	C.cairo_matrix_invert(self.cairo_matrix_t())
+// Rotate rotates the matrix by the given amount
+func (m *Matrix) Rotate(radians float64) {
+	C.cairo_matrix_rotate(m.Native(), C.double(radians))
 }
 
-func (self *Matrix) Multiply(a, b Matrix) {
-	C.cairo_matrix_multiply(self.cairo_matrix_t(), a.cairo_matrix_t(), b.cairo_matrix_t())
+// Invert inverts the matrix
+func (m *Matrix) Invert() {
+	C.cairo_matrix_invert(m.Native())
 }
 
-func (self *Matrix) TransformDistance(dx, dy float64) (float64, float64) {
-	C.cairo_matrix_transform_distance(self.cairo_matrix_t(),
+// Multiply multiplies the matrix by another matrix
+func (m *Matrix) Multiply(a, b Matrix) {
+	C.cairo_matrix_multiply(m.Native(), a.Native(), b.Native())
+}
+
+// TransformDistance ...
+func (m *Matrix) TransformDistance(dx, dy float64) (float64, float64) {
+	C.cairo_matrix_transform_distance(m.Native(),
 		(*C.double)(unsafe.Pointer(&dx)), (*C.double)(unsafe.Pointer(&dy)))
 	return dx, dy
 }
 
-func (self *Matrix) TransformPoint(x, y float64) (float64, float64) {
-	C.cairo_matrix_transform_point(self.cairo_matrix_t(),
+// TransformPoint ...
+func (m *Matrix) TransformPoint(x, y float64) (float64, float64) {
+	C.cairo_matrix_transform_point(m.Native(),
 		(*C.double)(unsafe.Pointer(&x)), (*C.double)(unsafe.Pointer(&y)))
 	return x, y
 }

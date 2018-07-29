@@ -1,9 +1,8 @@
-// +build !goci
 package main
 
 // Simple test for cairo package
 
-import "github.com/ungerik/go-cairo"
+import "github.com/bit101/go-cairo"
 
 /*
 Go port of this C code:

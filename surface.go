@@ -1,4 +1,5 @@
 // +build !goci
+
 package cairo
 
 // #include <cairo/cairo-pdf.h>
@@ -13,18 +14,16 @@ import (
 	"image/draw"
 	"unsafe"
 
-	"github.com/ungerik/go-cairo/extimage"
+	"github.com/bit101/go-cairo/extimage"
 )
 
-type Cairo_surface *C.cairo_surface_t
-type Cairo_context *C.cairo_t
-
-// Golang struct to hold both a cairo surface and a cairo context
+// Surface Golang struct to hold both a cairo surface and a cairo context
 type Surface struct {
-	surface Cairo_surface
-	context Cairo_context
+	surface *C.cairo_surface_t
+	context *C.cairo_t
 }
 
+// NewSurface creates a new Surface struct.
 func NewSurface(format Format, width, height int) *Surface {
 	s := C.cairo_image_surface_create(C.cairo_format_t(format), C.int(width), C.int(height))
 	return &Surface{surface: s, context: C.cairo_create(s)}
@@ -33,10 +32,11 @@ func NewSurface(format Format, width, height int) *Surface {
 // NewSurfaceFromC creates a new surface from C data types.
 // This is useful, if you already obtained a surface by
 // using a C library, for example an XCB surface.
-func NewSurfaceFromC(s Cairo_surface, c Cairo_context) *Surface {
+func NewSurfaceFromC(s *C.cairo_surface_t, c *C.cairo_t) *Surface {
 	return &Surface{surface: s, context: c}
 }
 
+// NewSurfaceFromPNG creates a new Surface struct from a png file.
 func NewSurfaceFromPNG(filename string) (*Surface, Status) {
 
 	cstr := C.CString(filename)
@@ -44,13 +44,13 @@ func NewSurfaceFromPNG(filename string) (*Surface, Status) {
 
 	surfaceNative := C.cairo_image_surface_create_from_png(cstr)
 	status := Status(C.cairo_surface_status(surfaceNative))
-	if status != STATUS_SUCCESS {
+	if status != StatusSuccess {
 		return nil, status
 	}
 
 	contextNative := C.cairo_create(surfaceNative)
 	status = Status(C.cairo_status(contextNative))
-	if status != STATUS_SUCCESS {
+	if status != StatusSuccess {
 		return nil, status
 	}
 
@@ -59,32 +59,34 @@ func NewSurfaceFromPNG(filename string) (*Surface, Status) {
 		context: contextNative,
 	}
 
-	return surface, STATUS_SUCCESS
+	return surface, StatusSuccess
 }
 
-func (self *Surface) Native() (surface, context uintptr) {
-
-	surface = uintptr(unsafe.Pointer(self.surface))
-	context = uintptr(unsafe.Pointer(self.context))
+// Native returns a pointer to the native cairo surface and context.
+func (s *Surface) Native() (surface, context uintptr) {
+	surface = uintptr(unsafe.Pointer(s.surface))
+	context = uintptr(unsafe.Pointer(s.context))
 
 	return
 }
 
+// NewSurfaceFromImage created a new Surface struct from an Image object.
 func NewSurfaceFromImage(img image.Image) *Surface {
 	var format Format
 	switch img.(type) {
 	case *image.Alpha, *image.Alpha16:
-		format = FORMAT_A8
+		format = FormatA8
 	case *extimage.BGRN, *image.Gray, *image.Gray16, *image.YCbCr:
-		format = FORMAT_RGB24
+		format = FormatRGB24
 	default:
-		format = FORMAT_ARGB32
+		format = FormatARGB32
 	}
 	surface := NewSurface(format, img.Bounds().Dx(), img.Bounds().Dy())
 	surface.SetImage(img)
 	return surface
 }
 
+// NewPDFSurface creates a new Surface struct used for saving as a PDF.
 func NewPDFSurface(filename string, widthInPoints, heightInPoints float64, version PDFVersion) *Surface {
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
@@ -93,6 +95,7 @@ func NewPDFSurface(filename string, widthInPoints, heightInPoints float64, versi
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+// NewPSSurface creates a new Surface sturct used in saving as a postscript file.
 func NewPSSurface(filename string, widthInPoints, heightInPoints float64, level PSLevel) *Surface {
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
@@ -101,6 +104,7 @@ func NewPSSurface(filename string, widthInPoints, heightInPoints float64, level 
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+// NewSVGSurface creates a new Surface struct used in saving as an SVG file.
 func NewSVGSurface(filename string, widthInPoints, heightInPoints float64, version SVGVersion) *Surface {
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
@@ -109,211 +113,255 @@ func NewSVGSurface(filename string, widthInPoints, heightInPoints float64, versi
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
-func (self *Surface) GetCurrentPoint() (float64, float64) {
-	if !self.HasCurrentPoint() {
+// GetCurrentPoint gets the current drawing point.
+func (s *Surface) GetCurrentPoint() (float64, float64) {
+	if !s.HasCurrentPoint() {
 		return 0, 0
 	}
 	x := C.double(0)
 	y := C.double(0)
-	C.cairo_get_current_point(self.context, &x, &y)
-	if self.GetStatus() != STATUS_SUCCESS {
+	C.cairo_get_current_point(s.context, &x, &y)
+	if s.GetStatus() != StatusSuccess {
 		// May not need to panic here. Per cairo spec, if status is error, return 0, 0, which this will do.
 		panic("cairo.Surface.GetCurrentPoint() unable to get current point.")
 	}
 	return float64(x), float64(y)
 }
 
-func (self *Surface) HasCurrentPoint() bool {
-	return C.cairo_has_current_point(self.context) != 0
+// HasCurrentPoint returns whether or not there is a current drawing point.
+func (s *Surface) HasCurrentPoint() bool {
+	return C.cairo_has_current_point(s.context) != 0
 }
 
-func (self *Surface) Save() {
-	C.cairo_save(self.context)
+// Save saves the current state of the context.
+func (s *Surface) Save() {
+	C.cairo_save(s.context)
 }
 
-func (self *Surface) Restore() {
-	C.cairo_restore(self.context)
+// Restore restores the the last saved state of the context.
+func (s *Surface) Restore() {
+	C.cairo_restore(s.context)
 }
 
-func (self *Surface) PushGroup() {
-	C.cairo_push_group(self.context)
+// PushGroup ...
+func (s *Surface) PushGroup() {
+	C.cairo_push_group(s.context)
 }
 
-func (self *Surface) PushGroupWithContent(content Content) {
-	C.cairo_push_group_with_content(self.context, C.cairo_content_t(content))
+// PushGroupWithContent ...
+func (s *Surface) PushGroupWithContent(content Content) {
+	C.cairo_push_group_with_content(s.context, C.cairo_content_t(content))
 }
 
-func (self *Surface) PopGroup() (pattern *Pattern) {
-	return &Pattern{C.cairo_pop_group(self.context)}
+// PopGroup ...
+func (s *Surface) PopGroup() (pattern *Pattern) {
+	return &Pattern{C.cairo_pop_group(s.context)}
 }
 
-func (self *Surface) PopGroupToSource() {
-	C.cairo_pop_group_to_source(self.context)
+// PopGroupToSource ...
+func (s *Surface) PopGroupToSource() {
+	C.cairo_pop_group_to_source(s.context)
 }
 
-func (self *Surface) SetOperator(operator Operator) {
-	C.cairo_set_operator(self.context, C.cairo_operator_t(operator))
+// SetOperator ...
+func (s *Surface) SetOperator(operator Operator) {
+	C.cairo_set_operator(s.context, C.cairo_operator_t(operator))
 }
 
-func (self *Surface) SetSource(pattern *Pattern) {
-	C.cairo_set_source(self.context, pattern.pattern)
+// SetSource sets the pattern to draw with.
+func (s *Surface) SetSource(pattern *Pattern) {
+	C.cairo_set_source(s.context, pattern.pattern)
 }
 
-func (self *Surface) SetSourceRGB(red, green, blue float64) {
-	C.cairo_set_source_rgb(self.context, C.double(red), C.double(green), C.double(blue))
+// SetSourceRGB sets the r, g, b values to draw with.
+func (s *Surface) SetSourceRGB(red, green, blue float64) {
+	C.cairo_set_source_rgb(s.context, C.double(red), C.double(green), C.double(blue))
 }
 
-func (self *Surface) SetSourceRGBA(red, green, blue, alpha float64) {
-	C.cairo_set_source_rgba(self.context, C.double(red), C.double(green), C.double(blue), C.double(alpha))
+// SetSourceRGBA sets the r, g, b, a values to draw with.
+func (s *Surface) SetSourceRGBA(red, green, blue, alpha float64) {
+	C.cairo_set_source_rgba(s.context, C.double(red), C.double(green), C.double(blue), C.double(alpha))
 }
 
-func (self *Surface) SetSourceSurface(surface *Surface, x, y float64) {
-	C.cairo_set_source_surface(self.context, surface.surface, C.double(x), C.double(y))
+// SetSourceSurface ...
+func (s *Surface) SetSourceSurface(surface *Surface, x, y float64) {
+	C.cairo_set_source_surface(s.context, surface.surface, C.double(x), C.double(y))
 }
 
-func (self *Surface) SetTolerance(tolerance float64) {
-	C.cairo_set_tolerance(self.context, C.double(tolerance))
+// SetTolerance ...
+func (s *Surface) SetTolerance(tolerance float64) {
+	C.cairo_set_tolerance(s.context, C.double(tolerance))
 }
 
-func (self *Surface) SetAntialias(antialias Antialias) {
-	C.cairo_set_antialias(self.context, C.cairo_antialias_t(antialias))
+// SetAntialias sets the antialias value to use.
+func (s *Surface) SetAntialias(antialias Antialias) {
+	C.cairo_set_antialias(s.context, C.cairo_antialias_t(antialias))
 }
 
-func (self *Surface) SetFillRule(fill_rule FillRule) {
-	C.cairo_set_fill_rule(self.context, C.cairo_fill_rule_t(fill_rule))
+// SetFillRule ...
+func (s *Surface) SetFillRule(fillRule FillRule) {
+	C.cairo_set_fill_rule(s.context, C.cairo_fill_rule_t(fillRule))
 }
 
-func (self *Surface) SetLineWidth(width float64) {
-	C.cairo_set_line_width(self.context, C.double(width))
+// SetLineWidth sets the pixel width that will be used when drawing lines.
+func (s *Surface) SetLineWidth(width float64) {
+	C.cairo_set_line_width(s.context, C.double(width))
 }
 
-func (self *Surface) SetLineCap(line_cap LineCap) {
-	C.cairo_set_line_cap(self.context, C.cairo_line_cap_t(line_cap))
+// SetLineCap sets the form of line cap used when drawing lines.
+func (s *Surface) SetLineCap(lineCap LineCap) {
+	C.cairo_set_line_cap(s.context, C.cairo_line_cap_t(lineCap))
 }
 
-func (self *Surface) SetLineJoin(line_join LineJoin) {
-	C.cairo_set_line_join(self.context, C.cairo_line_join_t(line_join))
+// SetLineJoin sets the type of join to use where two line segments connect.
+func (s *Surface) SetLineJoin(lineJoin LineJoin) {
+	C.cairo_set_line_join(s.context, C.cairo_line_join_t(lineJoin))
 }
 
-func (self *Surface) SetDash(dashes []float64, num_dashes int, offset float64) {
+// SetDash sets the dash pattern to be used when drawing lines.
+func (s *Surface) SetDash(dashes []float64, numDashes int, offset float64) {
 	dashesp := (*C.double)(&dashes[0])
-	C.cairo_set_dash(self.context, dashesp, C.int(num_dashes), C.double(offset))
+	C.cairo_set_dash(s.context, dashesp, C.int(numDashes), C.double(offset))
 }
 
-func (self *Surface) SetMiterLimit(limit float64) {
-	C.cairo_set_miter_limit(self.context, C.double(limit))
+// SetMiterLimit sets the sharpness of the corner in line joins.
+func (s *Surface) SetMiterLimit(limit float64) {
+	C.cairo_set_miter_limit(s.context, C.double(limit))
 }
 
-func (self *Surface) Translate(tx, ty float64) {
-	C.cairo_translate(self.context, C.double(tx), C.double(ty))
+// Translate translates the surface by the specified amounts.
+func (s *Surface) Translate(tx, ty float64) {
+	C.cairo_translate(s.context, C.double(tx), C.double(ty))
 }
 
-func (self *Surface) Scale(sx, sy float64) {
-	C.cairo_scale(self.context, C.double(sx), C.double(sy))
+// Scale scales the surface by the specified amount.
+func (s *Surface) Scale(sx, sy float64) {
+	C.cairo_scale(s.context, C.double(sx), C.double(sy))
 }
 
-func (self *Surface) Rotate(angle float64) {
-	C.cairo_rotate(self.context, C.double(angle))
+// Rotate rotates the surface by the specified amount.
+func (s *Surface) Rotate(angle float64) {
+	C.cairo_rotate(s.context, C.double(angle))
 }
 
-func (self *Surface) Transform(matrix Matrix) {
-	C.cairo_transform(self.context, matrix.cairo_matrix_t())
+// Transform transforms the surface with the specified matrix.
+func (s *Surface) Transform(matrix Matrix) {
+	C.cairo_transform(s.context, matrix.Native())
 }
 
-func (self *Surface) SetMatrix(matrix Matrix) {
-	C.cairo_set_matrix(self.context, matrix.cairo_matrix_t())
+// SetMatrix resets the surface transform to the specified matrix
+func (s *Surface) SetMatrix(matrix Matrix) {
+	C.cairo_set_matrix(s.context, matrix.Native())
 }
 
-func (self *Surface) IdentityMatrix() {
-	C.cairo_identity_matrix(self.context)
+// IdentityMatrix ...
+func (s *Surface) IdentityMatrix() {
+	C.cairo_identity_matrix(s.context)
 }
 
-func (self *Surface) UserToDevice(x, y float64) (float64, float64) {
-	C.cairo_user_to_device(self.context, (*C.double)(&x), (*C.double)(&y))
+// UserToDevice ...
+func (s *Surface) UserToDevice(x, y float64) (float64, float64) {
+	C.cairo_user_to_device(s.context, (*C.double)(&x), (*C.double)(&y))
 	return x, y
 }
 
-func (self *Surface) UserToDeviceDistance(dx, dy float64) (float64, float64) {
-	C.cairo_user_to_device_distance(self.context, (*C.double)(&dx), (*C.double)(&dy))
+// UserToDeviceDistance ...
+func (s *Surface) UserToDeviceDistance(dx, dy float64) (float64, float64) {
+	C.cairo_user_to_device_distance(s.context, (*C.double)(&dx), (*C.double)(&dy))
 	return dx, dy
 }
 
-func (self *Surface) DeviceToUser(x, y float64) (float64, float64) {
-	C.cairo_device_to_user(self.context, (*C.double)(&x), (*C.double)(&y))
+// DeviceToUser ...
+func (s *Surface) DeviceToUser(x, y float64) (float64, float64) {
+	C.cairo_device_to_user(s.context, (*C.double)(&x), (*C.double)(&y))
 	return x, y
 }
 
-func (self *Surface) DeviceToUserDistance(x, y float64) (float64, float64) {
-	C.cairo_device_to_user_distance(self.context, (*C.double)(&x), (*C.double)(&y))
+// DeviceToUserDistance ...
+func (s *Surface) DeviceToUserDistance(x, y float64) (float64, float64) {
+	C.cairo_device_to_user_distance(s.context, (*C.double)(&x), (*C.double)(&y))
 	return x, y
 }
 
 // path creation methods
 
-func (self *Surface) NewPath() {
-	C.cairo_new_path(self.context)
+// NewPath begins a new drawing path.
+func (s *Surface) NewPath() {
+	C.cairo_new_path(s.context)
 }
 
-func (self *Surface) MoveTo(x, y float64) {
-	C.cairo_move_to(self.context, C.double(x), C.double(y))
+// MoveTo moves to the specified point.
+func (s *Surface) MoveTo(x, y float64) {
+	C.cairo_move_to(s.context, C.double(x), C.double(y))
 }
 
-func (self *Surface) NewSubPath() {
-	C.cairo_new_sub_path(self.context)
+// NewSubPath creates a new sub drawing path.
+func (s *Surface) NewSubPath() {
+	C.cairo_new_sub_path(s.context)
 }
 
-func (self *Surface) LineTo(x, y float64) {
-	C.cairo_line_to(self.context, C.double(x), C.double(y))
+// LineTo draws a line to the specified point.
+func (s *Surface) LineTo(x, y float64) {
+	C.cairo_line_to(s.context, C.double(x), C.double(y))
 }
 
-func (self *Surface) CurveTo(x1, y1, x2, y2, x3, y3 float64) {
-	C.cairo_curve_to(self.context,
+// CurveTo draws a Bezier curve through the specified points.
+func (s *Surface) CurveTo(x1, y1, x2, y2, x3, y3 float64) {
+	C.cairo_curve_to(s.context,
 		C.double(x1), C.double(y1),
 		C.double(x2), C.double(y2),
 		C.double(x3), C.double(y3))
 }
 
-func (self *Surface) Arc(xc, yc, radius, angle1, angle2 float64) {
-	C.cairo_arc(self.context,
+// Arc draws and arc with the specified parameters.
+func (s *Surface) Arc(xc, yc, radius, angle1, angle2 float64) {
+	C.cairo_arc(s.context,
 		C.double(xc), C.double(yc),
 		C.double(radius),
 		C.double(angle1), C.double(angle2))
 }
 
-func (self *Surface) ArcNegative(xc, yc, radius, angle1, angle2 float64) {
-	C.cairo_arc_negative(self.context,
+// ArcNegative draws a negative arc to the specified parameters.
+func (s *Surface) ArcNegative(xc, yc, radius, angle1, angle2 float64) {
+	C.cairo_arc_negative(s.context,
 		C.double(xc), C.double(yc),
 		C.double(radius),
 		C.double(angle1), C.double(angle2))
 }
 
-func (self *Surface) RelMoveTo(dx, dy float64) {
-	C.cairo_rel_move_to(self.context, C.double(dx), C.double(dy))
+// RelMoveTo ...
+func (s *Surface) RelMoveTo(dx, dy float64) {
+	C.cairo_rel_move_to(s.context, C.double(dx), C.double(dy))
 }
 
-func (self *Surface) RelLineTo(dx, dy float64) {
-	C.cairo_rel_line_to(self.context, C.double(dx), C.double(dy))
+// RelLineTo ...
+func (s *Surface) RelLineTo(dx, dy float64) {
+	C.cairo_rel_line_to(s.context, C.double(dx), C.double(dy))
 }
 
-func (self *Surface) RelCurveTo(dx1, dy1, dx2, dy2, dx3, dy3 float64) {
-	C.cairo_rel_curve_to(self.context,
+// RelCurveTo ...
+func (s *Surface) RelCurveTo(dx1, dy1, dx2, dy2, dx3, dy3 float64) {
+	C.cairo_rel_curve_to(s.context,
 		C.double(dx1), C.double(dy1),
 		C.double(dx2), C.double(dy2),
 		C.double(dx3), C.double(dy3))
 }
 
-func (self *Surface) Rectangle(x, y, width, height float64) {
-	C.cairo_rectangle(self.context,
+// Rectangle ...
+func (s *Surface) Rectangle(x, y, width, height float64) {
+	C.cairo_rectangle(s.context,
 		C.double(x), C.double(y),
 		C.double(width), C.double(height))
 }
 
-func (self *Surface) ClosePath() {
-	C.cairo_close_path(self.context)
+// ClosePath ...
+func (s *Surface) ClosePath() {
+	C.cairo_close_path(s.context)
 }
 
-func (self *Surface) PathExtents() (left, top, right, bottom float64) {
-	C.cairo_path_extents(self.context,
+// PathExtents ...
+func (s *Surface) PathExtents() (left, top, right, bottom float64) {
+	C.cairo_path_extents(s.context,
 		(*C.double)(&left), (*C.double)(&top),
 		(*C.double)(&right), (*C.double)(&bottom))
 	return left, top, right, bottom
@@ -322,69 +370,83 @@ func (self *Surface) PathExtents() (left, top, right, bottom float64) {
 ///////////////////////////////////////////////////////////////////////////////
 // Painting methods
 
-func (self *Surface) Paint() {
-	C.cairo_paint(self.context)
+// Paint ...
+func (s *Surface) Paint() {
+	C.cairo_paint(s.context)
 }
 
-func (self *Surface) PaintWithAlpha(alpha float64) {
-	C.cairo_paint_with_alpha(self.context, C.double(alpha))
+// PaintWithAlpha ...
+func (s *Surface) PaintWithAlpha(alpha float64) {
+	C.cairo_paint_with_alpha(s.context, C.double(alpha))
 }
 
-func (self *Surface) Mask(pattern Pattern) {
-	C.cairo_mask(self.context, pattern.pattern)
+// Mask ...
+func (s *Surface) Mask(pattern Pattern) {
+	C.cairo_mask(s.context, pattern.pattern)
 }
 
-func (self *Surface) MaskSurface(surface *Surface, surface_x, surface_y float64) {
-	C.cairo_mask_surface(self.context, surface.surface, C.double(surface_x), C.double(surface_y))
+// MaskSurface ...
+func (s *Surface) MaskSurface(surface *Surface, surfaceX, surfaceY float64) {
+	C.cairo_mask_surface(s.context, surface.surface, C.double(surfaceX), C.double(surfaceY))
 }
 
-func (self *Surface) Stroke() {
-	C.cairo_stroke(self.context)
+// Stroke ...
+func (s *Surface) Stroke() {
+	C.cairo_stroke(s.context)
 }
 
-func (self *Surface) StrokePreserve() {
-	C.cairo_stroke_preserve(self.context)
+// StrokePreserve ...
+func (s *Surface) StrokePreserve() {
+	C.cairo_stroke_preserve(s.context)
 }
 
-func (self *Surface) Fill() {
-	C.cairo_fill(self.context)
+// Fill ...
+func (s *Surface) Fill() {
+	C.cairo_fill(s.context)
 }
 
-func (self *Surface) FillPreserve() {
-	C.cairo_fill_preserve(self.context)
+// FillPreserve ...
+func (s *Surface) FillPreserve() {
+	C.cairo_fill_preserve(s.context)
 }
 
-func (self *Surface) CopyPage() {
-	C.cairo_copy_page(self.context)
+// CopyPage ...
+func (s *Surface) CopyPage() {
+	C.cairo_copy_page(s.context)
 }
 
-func (self *Surface) ShowPage() {
-	C.cairo_show_page(self.context)
+// ShowPage ...
+func (s *Surface) ShowPage() {
+	C.cairo_show_page(s.context)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Insideness testing
 
-func (self *Surface) InStroke(x, y float64) bool {
-	return C.cairo_in_stroke(self.context, C.double(x), C.double(y)) != 0
+// InStroke ...
+func (s *Surface) InStroke(x, y float64) bool {
+	return C.cairo_in_stroke(s.context, C.double(x), C.double(y)) != 0
 }
 
-func (self *Surface) InFill(x, y float64) bool {
-	return C.cairo_in_fill(self.context, C.double(x), C.double(y)) != 0
+// InFill ...
+func (s *Surface) InFill(x, y float64) bool {
+	return C.cairo_in_fill(s.context, C.double(x), C.double(y)) != 0
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Rectangular extents
 
-func (self *Surface) StrokeExtents() (left, top, right, bottom float64) {
-	C.cairo_stroke_extents(self.context,
+// StrokeExtents ...
+func (s *Surface) StrokeExtents() (left, top, right, bottom float64) {
+	C.cairo_stroke_extents(s.context,
 		(*C.double)(&left), (*C.double)(&top),
 		(*C.double)(&right), (*C.double)(&bottom))
 	return left, top, right, bottom
 }
 
-func (self *Surface) FillExtents() (left, top, right, bottom float64) {
-	C.cairo_fill_extents(self.context,
+// FillExtents ...
+func (s *Surface) FillExtents() (left, top, right, bottom float64) {
+	C.cairo_fill_extents(s.context,
 		(*C.double)(&left), (*C.double)(&top),
 		(*C.double)(&right), (*C.double)(&bottom))
 	return left, top, right, bottom
@@ -393,27 +455,32 @@ func (self *Surface) FillExtents() (left, top, right, bottom float64) {
 ///////////////////////////////////////////////////////////////////////////////
 // Clipping methods
 
-func (self *Surface) ResetClip() {
-	C.cairo_reset_clip(self.context)
+// ResetClip ...
+func (s *Surface) ResetClip() {
+	C.cairo_reset_clip(s.context)
 }
 
-func (self *Surface) Clip() {
-	C.cairo_clip(self.context)
+// Clip ...
+func (s *Surface) Clip() {
+	C.cairo_clip(s.context)
 }
 
-func (self *Surface) ClipPreserve() {
-	C.cairo_clip_preserve(self.context)
+// ClipPreserve ...
+func (s *Surface) ClipPreserve() {
+	C.cairo_clip_preserve(s.context)
 }
 
-func (self *Surface) ClipExtents() (left, top, right, bottom float64) {
-	C.cairo_clip_extents(self.context,
+// ClipExtents ...
+func (s *Surface) ClipExtents() (left, top, right, bottom float64) {
+	C.cairo_clip_extents(s.context,
 		(*C.double)(&left), (*C.double)(&top),
 		(*C.double)(&right), (*C.double)(&bottom))
 	return left, top, right, bottom
 }
 
-func (self *Surface) ClipRectangleList() ([]Rectangle, Status) {
-	list := C.cairo_copy_clip_rectangle_list(self.context)
+// ClipRectangleList ...
+func (s *Surface) ClipRectangleList() ([]Rectangle, Status) {
+	list := C.cairo_copy_clip_rectangle_list(s.context)
 	defer C.cairo_rectangle_list_destroy(list)
 	rects := make([]Rectangle, int(list.num_rectangles))
 	C.memcpy(unsafe.Pointer(&rects[0]), unsafe.Pointer(list.rectangles), C.size_t(list.num_rectangles*8))
@@ -423,71 +490,86 @@ func (self *Surface) ClipRectangleList() ([]Rectangle, Status) {
 ///////////////////////////////////////////////////////////////////////////////
 // Font/Text methods
 
-func (self *Surface) SelectFontFace(name string, font_slant_t, font_weight_t int) {
-	s := C.CString(name)
-	C.cairo_select_font_face(self.context, s, C.cairo_font_slant_t(font_slant_t), C.cairo_font_weight_t(font_weight_t))
+// SelectFontFace ...
+func (s *Surface) SelectFontFace(name string, fontSlant, fontWeight int) {
+	str := C.CString(name)
+	C.cairo_select_font_face(s.context, str, C.cairo_font_slant_t(fontSlant), C.cairo_font_weight_t(fontWeight))
 	C.free(unsafe.Pointer(s))
 }
 
-func (self *Surface) SetFontSize(size float64) {
-	C.cairo_set_font_size(self.context, C.double(size))
+// SetFontSize ...
+func (s *Surface) SetFontSize(size float64) {
+	C.cairo_set_font_size(s.context, C.double(size))
 }
 
-func (self *Surface) SetFontMatrix(matrix Matrix) {
-	C.cairo_set_font_matrix(self.context, matrix.cairo_matrix_t())
+// SetFontMatrix ...
+func (s *Surface) SetFontMatrix(matrix Matrix) {
+	C.cairo_set_font_matrix(s.context, matrix.Native())
 }
 
-func (self *Surface) SetFontOptions(fontOptions *FontOptions) {
+// SetFontOptions ...
+func (s *Surface) SetFontOptions(fontOptions *FontOptions) {
 	panic("not implemented") // todo
 }
 
-func (self *Surface) GetFontOptions() *FontOptions {
+// GetFontOptions ...
+func (s *Surface) GetFontOptions() *FontOptions {
 	panic("not implemented") // todo
 }
 
-func (self *Surface) SetFontFace(fontFace *FontFace) {
+// SetFontFace ...
+func (s *Surface) SetFontFace(fontFace *FontFace) {
 	panic("not implemented") // todo
 }
 
-func (self *Surface) GetFontFace() *FontFace {
+// GetFontFace ...
+func (s *Surface) GetFontFace() *FontFace {
 	panic("not implemented") // todo
 }
 
-func (self *Surface) SetScaledFont(scaledFont *ScaledFont) {
+// SetScaledFont ...
+func (s *Surface) SetScaledFont(scaledFont *ScaledFont) {
 	panic("not implemented") // todo
 }
 
-func (self *Surface) GetScaledFont() *ScaledFont {
+// GetScaledFont ...
+func (s *Surface) GetScaledFont() *ScaledFont {
 	panic("not implemented") // todo
 }
 
-func (self *Surface) ShowText(text string) {
+// ShowText ...
+func (s *Surface) ShowText(text string) {
 	cs := C.CString(text)
-	C.cairo_show_text(self.context, cs)
+	C.cairo_show_text(s.context, cs)
 	C.free(unsafe.Pointer(cs))
 }
 
-func (self *Surface) ShowGlyphs(glyphs []Glyph) {
+// ShowGlyphs ...
+func (s *Surface) ShowGlyphs(glyphs []Glyph) {
 	panic("not implemented") // todo
 }
 
-func (self *Surface) ShowTextGlyphs(text string, glyphs []Glyph, clusters []TextCluster, flags TextClusterFlag) {
+// ShowTextGlyphs ...
+func (s *Surface) ShowTextGlyphs(text string, glyphs []Glyph, clusters []TextCluster, flags TextClusterFlag) {
 }
 
-func (self *Surface) TextPath(text string) {
+// TextPath ...
+func (s *Surface) TextPath(text string) {
 	cs := C.CString(text)
-	C.cairo_text_path(self.context, cs)
+	C.cairo_text_path(s.context, cs)
 	C.free(unsafe.Pointer(cs))
 }
 
-func (self *Surface) GlyphPath(glyphs []Glyph) {
+// GlyphPath ...
+func (s *Surface) GlyphPath(glyphs []Glyph) {
 	panic("not implemented") // todo
 }
 
-func (self *Surface) TextExtents(text string) *TextExtents {
+// TextExtents ...
+func (s *Surface) TextExtents(text string) *TextExtents {
 	cte := C.cairo_text_extents_t{}
 	cs := C.CString(text)
-	C.cairo_text_extents(self.context, cs, &cte)
+	C.cairo_text_extents(s.context, cs, &cte)
 	C.free(unsafe.Pointer(cs))
 	te := &TextExtents{
 		Xbearing: float64(cte.x_bearing),
@@ -500,12 +582,14 @@ func (self *Surface) TextExtents(text string) *TextExtents {
 	return te
 }
 
-func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
+// GlyphExtents ...
+func (s *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
 	panic("not implemented") // todo
 	//C.cairo_text_extents
 }
 
-func (self *Surface) FontExtents() *FontExtents {
+// FontExtents ...
+func (s *Surface) FontExtents() *FontExtents {
 	panic("not implemented") // todo
 	//C.cairo_text_extents
 }
@@ -513,8 +597,9 @@ func (self *Surface) FontExtents() *FontExtents {
 ///////////////////////////////////////////////////////////////////////////////
 // Error status queries
 
-func (self *Surface) Status() Status {
-	return Status(C.cairo_status(self.context))
+// Status ...
+func (s *Surface) Status() Status {
+	return Status(C.cairo_status(s.context))
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -523,271 +608,274 @@ func (self *Surface) Status() Status {
 ///////////////////////////////////////////////////////////////////////////////
 // Surface manipulation
 
-func (self *Surface) CreateForRectangle(x, y, width, height float64) *Surface {
+// CreateForRectangle ...
+func (s *Surface) CreateForRectangle(x, y, width, height float64) *Surface {
 	return &Surface{
-		context: self.context,
-		surface: C.cairo_surface_create_for_rectangle(self.surface,
+		context: s.context,
+		surface: C.cairo_surface_create_for_rectangle(s.surface,
 			C.double(x), C.double(y), C.double(width), C.double(height)),
 	}
 }
 
-func (self *Surface) Finish() {
-	C.cairo_surface_finish(self.surface)
+// Finish ...
+func (s *Surface) Finish() {
+	C.cairo_surface_finish(s.surface)
 }
 
-func (self *Surface) Destroy() {
-	C.cairo_destroy(self.context)
-	C.cairo_surface_destroy(self.surface)
+// Destroy ...
+func (s *Surface) Destroy() {
+	C.cairo_destroy(s.context)
+	C.cairo_surface_destroy(s.surface)
 }
 
-func (self *Surface) GetDevice() *Device {
+// GetDevice ...
+func (s *Surface) GetDevice() *Device {
 	//C.cairo_surface_get_device
 	panic("not implemented") // todo
 }
 
-func (self *Surface) GetReferenceCount() int {
-	return int(C.cairo_surface_get_reference_count(self.surface))
+// GetReferenceCount ...
+func (s *Surface) GetReferenceCount() int {
+	return int(C.cairo_surface_get_reference_count(s.surface))
 }
 
-func (self *Surface) GetStatus() Status {
-	return Status(C.cairo_surface_status(self.surface))
+// GetStatus ...
+func (s *Surface) GetStatus() Status {
+	return Status(C.cairo_surface_status(s.surface))
 }
 
-func (self *Surface) GetType() SurfaceType {
-	return SurfaceType(C.cairo_surface_get_type(self.surface))
+// GetType ...
+func (s *Surface) GetType() SurfaceType {
+	return SurfaceType(C.cairo_surface_get_type(s.surface))
 }
 
-func (self *Surface) GetContent() Content {
-	return Content(C.cairo_surface_get_content(self.surface))
+// GetContent ...
+func (s *Surface) GetContent() Content {
+	return Content(C.cairo_surface_get_content(s.surface))
 }
 
-func (self *Surface) WriteToPNG(filename string) Status {
+// WriteToPNG ...
+func (s *Surface) WriteToPNG(filename string) Status {
 
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
 
-	return Status(C.cairo_surface_write_to_png(self.surface, cs))
+	return Status(C.cairo_surface_write_to_png(s.surface, cs))
 }
 
 // Already implemented via context split context/surface?
-// func (self *Surface) GetFontOptions() *FontOptions {
+// ) ...
+// func (s *Surface) GetFontOptions() *FontOptions {
 // 	// todo
 // 	// C.cairo_surface_get_font_options (cairo_surface_t      *surface,				cairo_font_options_t *options);
 // 	return nil
 // }
 
-func (self *Surface) Flush() {
-	C.cairo_surface_flush(self.surface)
+// Flush ...
+func (s *Surface) Flush() {
+	C.cairo_surface_flush(s.surface)
 }
 
-func (self *Surface) MarkDirty() {
-	C.cairo_surface_mark_dirty(self.surface)
+// MarkDirty ...
+func (s *Surface) MarkDirty() {
+	C.cairo_surface_mark_dirty(s.surface)
 }
 
-func (self *Surface) MarkDirtyRectangle(x, y, width, height int) {
-	C.cairo_surface_mark_dirty_rectangle(self.surface,
+// MarkDirtyRectangle ...
+func (s *Surface) MarkDirtyRectangle(x, y, width, height int) {
+	C.cairo_surface_mark_dirty_rectangle(s.surface,
 		C.int(x), C.int(y), C.int(width), C.int(height))
 }
 
-func (self *Surface) SetDeviceOffset(x, y float64) {
-	C.cairo_surface_set_device_offset(self.surface, C.double(x), C.double(y))
+// SetDeviceOffset ...
+func (s *Surface) SetDeviceOffset(x, y float64) {
+	C.cairo_surface_set_device_offset(s.surface, C.double(x), C.double(y))
 }
 
-func (self *Surface) GetDeviceOffset() (x, y float64) {
-	C.cairo_surface_get_device_offset(self.surface, (*C.double)(&x), (*C.double)(&y))
+// GetDeviceOffset ...
+func (s *Surface) GetDeviceOffset() (x, y float64) {
+	C.cairo_surface_get_device_offset(s.surface, (*C.double)(&x), (*C.double)(&y))
 	return x, y
 }
 
-func (self *Surface) SetFallbackResolution(xPixelPerInch, yPixelPerInch float64) {
-	C.cairo_surface_set_fallback_resolution(self.surface,
+// SetFallbackResolution ...
+func (s *Surface) SetFallbackResolution(xPixelPerInch, yPixelPerInch float64) {
+	C.cairo_surface_set_fallback_resolution(s.surface,
 		C.double(xPixelPerInch), C.double(yPixelPerInch))
 }
 
-func (self *Surface) GetFallbackResolution() (xPixelPerInch, yPixelPerInch float64) {
-	C.cairo_surface_get_fallback_resolution(self.surface,
+// GetFallbackResolution ...
+func (s *Surface) GetFallbackResolution() (xPixelPerInch, yPixelPerInch float64) {
+	C.cairo_surface_get_fallback_resolution(s.surface,
 		(*C.double)(&xPixelPerInch), (*C.double)(&yPixelPerInch))
 	return xPixelPerInch, yPixelPerInch
 }
 
 // Already defined for context
-// func (self *Surface) CopyPage() {
-// 	C.cairo_surface_copy_page(self.surface)
+// ) ...
+// func (s *Surface) CopyPage() {
+// 	C.cairo_surface_copy_page(s.surface)
 // }
 
-// func (self *Surface) ShowPage() {
-// 	C.cairo_surface_show_page(self.surface)
+// ) ...
+// func (s *Surface) ShowPage() {
+// 	C.cairo_surface_show_page(s.surface)
 // }
 
-func (self *Surface) HasShowTextGlyphs() bool {
-	return C.cairo_surface_has_show_text_glyphs(self.surface) != 0
+// HasShowTextGlyphs ...
+func (s *Surface) HasShowTextGlyphs() bool {
+	return C.cairo_surface_has_show_text_glyphs(s.surface) != 0
 }
 
 // GetData returns a copy of the surfaces raw pixel data.
 // This method also calls Flush.
-func (self *Surface) GetData() []byte {
-	self.Flush()
-	dataPtr := C.cairo_image_surface_get_data(self.surface)
+// GetData ...
+func (s *Surface) GetData() []byte {
+	s.Flush()
+	dataPtr := C.cairo_image_surface_get_data(s.surface)
 	if dataPtr == nil {
 		panic("cairo.Surface.GetData(): can't access surface pixel data")
 	}
-	stride := C.cairo_image_surface_get_stride(self.surface)
-	height := C.cairo_image_surface_get_height(self.surface)
+	stride := C.cairo_image_surface_get_stride(s.surface)
+	height := C.cairo_image_surface_get_height(s.surface)
 	return C.GoBytes(unsafe.Pointer(dataPtr), stride*height)
 }
 
 // SetData sets the surfaces raw pixel data.
 // This method also calls Flush and MarkDirty.
-func (self *Surface) SetData(data []byte) {
-	self.Flush()
-	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(self.surface))
+// SetData ...
+func (s *Surface) SetData(data []byte) {
+	s.Flush()
+	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(s.surface))
 	if dataPtr == nil {
 		panic("cairo.Surface.SetData(): can't access surface pixel data")
 	}
-	stride := C.cairo_image_surface_get_stride(self.surface)
-	height := C.cairo_image_surface_get_height(self.surface)
+	stride := C.cairo_image_surface_get_stride(s.surface)
+	height := C.cairo_image_surface_get_height(s.surface)
 	if len(data) != int(stride*height) {
 		panic("cairo.Surface.SetData(): invalid data size")
 	}
 	C.memcpy(dataPtr, unsafe.Pointer(&data[0]), C.size_t(stride*height))
-	self.MarkDirty()
+	s.MarkDirty()
 }
 
-func (self *Surface) GetFormat() Format {
-	return Format(C.cairo_image_surface_get_format(self.surface))
+// GetFormat ...
+func (s *Surface) GetFormat() Format {
+	return Format(C.cairo_image_surface_get_format(s.surface))
 }
 
-func (self *Surface) GetWidth() int {
-	return int(C.cairo_image_surface_get_width(self.surface))
+// GetWidth ...
+func (s *Surface) GetWidth() int {
+	return int(C.cairo_image_surface_get_width(s.surface))
 }
 
-func (self *Surface) GetHeight() int {
-	return int(C.cairo_image_surface_get_height(self.surface))
+// GetHeight ...
+func (s *Surface) GetHeight() int {
+	return int(C.cairo_image_surface_get_height(s.surface))
 }
 
-func (self *Surface) GetStride() int {
-	return int(C.cairo_image_surface_get_stride(self.surface))
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Pattern creation methods
-
-func CreateLinearGradient(x0, y0, x1, y1 float64) *Pattern {
-	p := C.cairo_pattern_create_linear(C.double(x0), C.double(y0), C.double(x1), C.double(y1))
-	return &Pattern{p}
-}
-
-func CreateRadialGradient(cx0, cy0, radius0, cx1, cy1, radius1 float64) *Pattern {
-	p := C.cairo_pattern_create_radial(
-		C.double(cx0), C.double(cy0), C.double(radius0),
-		C.double(cx1), C.double(cy1), C.double(radius1),
-	)
-	return &Pattern{p}
-}
-
-func (pattern *Pattern) AddColorStopRGB(offset, red, green, blue float64) {
-	C.cairo_pattern_add_color_stop_rgb(pattern.pattern, C.double(offset), C.double(red), C.double(green), C.double(blue))
-}
-
-func (pattern *Pattern) AddColorStopRGBA(offset, red, green, blue, alpha float64) {
-	C.cairo_pattern_add_color_stop_rgba(pattern.pattern, C.double(offset), C.double(red), C.double(green), C.double(blue), C.double(alpha))
+// GetStride ...
+func (s *Surface) GetStride() int {
+	return int(C.cairo_image_surface_get_stride(s.surface))
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // image.Image methods
 
-func (self *Surface) GetImage() image.Image {
-	width := self.GetWidth()
-	height := self.GetHeight()
-	stride := self.GetStride()
-	data := self.GetData()
+// GetImage returns an image based on this surface's data.
+func (s *Surface) GetImage() image.Image {
+	width := s.GetWidth()
+	height := s.GetHeight()
+	stride := s.GetStride()
+	data := s.GetData()
 
-	switch self.GetFormat() {
-	case FORMAT_ARGB32:
+	switch s.GetFormat() {
+	case FormatARGB32:
 		return &extimage.BGRA{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
 		}
 
-	case FORMAT_RGB24:
+	case FormatRGB24:
 		return &extimage.BGRN{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
 		}
 
-	case FORMAT_A8:
+	case FormatA8:
 		return &image.Alpha{
 			Pix:    data,
 			Stride: stride,
 			Rect:   image.Rect(0, 0, width, height),
 		}
 
-	case FORMAT_A1:
-		panic("Unsuppored surface format cairo.FORMAT_A1")
+	case FormatA1:
+		panic("Unsuppored surface format cairo.FormatA1")
 
-	case FORMAT_RGB16_565:
-		panic("Unsuppored surface format cairo.FORMAT_RGB16_565")
+	case FormatRGB16565:
+		panic("Unsuppored surface format cairo.FormatRGB16565")
 
-	case FORMAT_RGB30:
-		panic("Unsuppored surface format cairo.FORMAT_RGB30")
+	case FormatRGB30:
+		panic("Unsuppored surface format cairo.FormatRGB30")
 
-	case FORMAT_INVALID:
+	case FormatInvalid:
 		panic("Invalid surface format")
 	}
 	panic("Unknown surface format")
 }
 
 // SetImage set the data from an image.Image with identical size.
-func (self *Surface) SetImage(img image.Image) {
-	width := self.GetWidth()
-	height := self.GetHeight()
-	stride := self.GetStride()
+func (s *Surface) SetImage(img image.Image) {
+	width := s.GetWidth()
+	height := s.GetHeight()
+	stride := s.GetStride()
 
-	switch self.GetFormat() {
-	case FORMAT_ARGB32:
+	switch s.GetFormat() {
+	case FormatARGB32:
 		if i, ok := img.(*extimage.BGRA); ok {
 			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
-				self.SetData(i.Pix)
+				s.SetData(i.Pix)
 				return
 			}
 		}
-		surfImg := self.GetImage().(*extimage.BGRA)
+		surfImg := s.GetImage().(*extimage.BGRA)
 		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
-		self.SetData(surfImg.Pix)
+		s.SetData(surfImg.Pix)
 
-	case FORMAT_RGB24:
+	case FormatRGB24:
 		if i, ok := img.(*extimage.BGRN); ok {
 			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
-				self.SetData(i.Pix)
+				s.SetData(i.Pix)
 				return
 			}
 		}
-		surfImg := self.GetImage().(*extimage.BGRN)
+		surfImg := s.GetImage().(*extimage.BGRN)
 		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
-		self.SetData(surfImg.Pix)
+		s.SetData(surfImg.Pix)
 
-	case FORMAT_A8:
+	case FormatA8:
 		if i, ok := img.(*image.Alpha); ok {
 			if i.Rect.Dx() == width && i.Rect.Dy() == height && i.Stride == stride {
-				self.SetData(i.Pix)
+				s.SetData(i.Pix)
 				return
 			}
 		}
-		surfImg := self.GetImage().(*image.Alpha)
+		surfImg := s.GetImage().(*image.Alpha)
 		draw.Draw(surfImg, surfImg.Bounds(), img, img.Bounds().Min, draw.Src)
-		self.SetData(surfImg.Pix)
+		s.SetData(surfImg.Pix)
 
-	case FORMAT_A1:
-		panic("Unsuppored surface format cairo.FORMAT_A1")
+	case FormatA1:
+		panic("Unsuppored surface format cairo.FormatA1")
 
-	case FORMAT_RGB16_565:
+	case FormatRGB16565:
 		panic("Unsuppored surface format cairo.FORMAT_RGB16_565")
 
-	case FORMAT_RGB30:
+	case FormatRGB30:
 		panic("Unsuppored surface format cairo.FORMAT_RGB30")
 
-	case FORMAT_INVALID:
+	case FormatInvalid:
 		panic("Invalid surface format")
 
 	default:

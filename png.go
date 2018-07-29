@@ -97,9 +97,10 @@ import "C"
 
 import "unsafe"
 
-func (self *Surface) WriteToPNGStream() ([]byte, Status) {
+// WriteToPNGStream ...
+func (s *Surface) WriteToPNGStream() ([]byte, Status) {
 	vec := C.go_cairo_vector_new()
-	status := Status(C.go_cairo_write_surface_to_vector(self.surface, vec))
+	status := Status(C.go_cairo_write_surface_to_vector(s.surface, vec))
 	buf := C.GoBytes(unsafe.Pointer(vec.buf), C.int(vec.len))
 	C.go_cairo_vector_free(vec)
 	return buf, status

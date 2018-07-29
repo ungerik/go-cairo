@@ -25,49 +25,53 @@ type BGRN struct {
 	Rect image.Rectangle
 }
 
-func (self *BGRN) ColorModel() color.Model {
+// ColorModel ...
+func (img *BGRN) ColorModel() color.Model {
 	return BGRNColorModel
 }
 
-func (self *BGRN) Bounds() image.Rectangle {
-	return self.Rect
+// Bounds ...
+func (img *BGRN) Bounds() image.Rectangle {
+	return img.Rect
 }
 
-func (self *BGRN) At(x, y int) color.Color {
-	if !(image.Point{x, y}.In(self.Rect)) {
+// At ...
+func (img *BGRN) At(x, y int) color.Color {
+	if !(image.Point{x, y}.In(img.Rect)) {
 		return BGRNColor{}
 	}
-	i := self.PixOffset(x, y)
+	i := img.PixOffset(x, y)
 	if littleEndian {
-		return BGRNColor{B: self.Pix[i+0], G: self.Pix[i+1], R: self.Pix[i+2]}
-	} else {
-		return BGRNColor{R: self.Pix[i+1], G: self.Pix[i+2], B: self.Pix[i+3]}
+		return BGRNColor{B: img.Pix[i+0], G: img.Pix[i+1], R: img.Pix[i+2]}
 	}
+	return BGRNColor{R: img.Pix[i+1], G: img.Pix[i+2], B: img.Pix[i+3]}
 }
 
 // PixOffset returns the index of the first element of Pix that corresponds to
 // the pixel at (x, y).
-func (self *BGRN) PixOffset(x, y int) int {
-	return (y-self.Rect.Min.Y)*self.Stride + (x-self.Rect.Min.X)*3
+func (img *BGRN) PixOffset(x, y int) int {
+	return (y-img.Rect.Min.Y)*img.Stride + (x-img.Rect.Min.X)*3
 }
 
-func (self *BGRN) Set(x, y int, c color.Color) {
-	if !(image.Point{x, y}.In(self.Rect)) {
+// Set ...
+func (img *BGRN) Set(x, y int, c color.Color) {
+	if !(image.Point{x, y}.In(img.Rect)) {
 		return
 	}
-	i := self.PixOffset(x, y)
+	i := img.PixOffset(x, y)
 	c1 := BGRNColorModel.Convert(c).(BGRNColor)
 	if littleEndian {
-		self.Pix[i+0] = c1.B
-		self.Pix[i+1] = c1.G
-		self.Pix[i+2] = c1.R
+		img.Pix[i+0] = c1.B
+		img.Pix[i+1] = c1.G
+		img.Pix[i+2] = c1.R
 	} else {
-		self.Pix[i+1] = c1.R
-		self.Pix[i+2] = c1.G
-		self.Pix[i+3] = c1.B
+		img.Pix[i+1] = c1.R
+		img.Pix[i+2] = c1.G
+		img.Pix[i+3] = c1.B
 	}
 }
 
+// BGRNColorModel ...
 var BGRNColorModel = color.ModelFunc(
 	func(c color.Color) color.Color {
 		if _, ok := c.(BGRNColor); ok {
@@ -78,10 +82,12 @@ var BGRNColorModel = color.ModelFunc(
 	},
 )
 
+// BGRNColor ...
 type BGRNColor struct {
 	B, G, R uint8
 }
 
+// RGBA ...
 func (c BGRNColor) RGBA() (r, g, b, a uint32) {
 	r = uint32(c.R)
 	r |= r << 8

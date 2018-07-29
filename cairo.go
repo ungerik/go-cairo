@@ -1,4 +1,3 @@
-// +build !goci
 package cairo
 
 // #cgo pkg-config: cairo
@@ -9,353 +8,368 @@ package cairo
 // #include <string.h>
 import "C"
 
-// cairo_status_t
+// Status cairo_status_t
 type Status int
 
-func (self Status) String() string {
-	return C.GoString(C.cairo_status_to_string(C.cairo_status_t(self)))
+func (s Status) String() string {
+	return C.GoString(C.cairo_status_to_string(C.cairo_status_t(s)))
 }
 
+// Status constants
 const (
-	STATUS_SUCCESS Status = iota
-	STATUS_NO_MEMORY
-	STATUS_INVALID_RESTORE
-	STATUS_INVALID_POP_GROUP
-	STATUS_NO_CURRENT_POINT
-	STATUS_INVALID_MATRIX
-	STATUS_INVALID_STATUS
-	STATUS_NULL_POINTER
-	STATUS_INVALID_STRING
-	STATUS_INVALID_PATH_DATA
-	STATUS_READ_ERROR
-	STATUS_WRITE_ERROR
-	STATUS_SURFACE_FINISHED
-	STATUS_SURFACE_TYPE_MISMATCH
-	STATUS_PATTERN_TYPE_MISMATCH
-	STATUS_INVALID_CONTENT
-	STATUS_INVALID_FORMAT
-	STATUS_INVALID_VISUAL
-	STATUS_FILE_NOT_FOUND
-	STATUS_INVALID_DASH
-	STATUS_INVALID_DSC_COMMENT
-	STATUS_INVALID_INDEX
-	STATUS_CLIP_NOT_REPRESENTABLE
-	STATUS_TEMP_FILE_ERROR
-	STATUS_INVALID_STRIDE
-	STATUS_FONT_TYPE_MISMATCH
-	STATUS_USER_FONT_IMMUTABLE
-	STATUS_USER_FONT_ERROR
-	STATUS_NEGATIVE_COUNT
-	STATUS_INVALID_CLUSTERS
-	STATUS_INVALID_SLANT
-	STATUS_INVALID_WEIGHT
-	STATUS_INVALID_SIZE
-	STATUS_USER_FONT_NOT_IMPLEMENTED
-	STATUS_DEVICE_TYPE_MISMATCH
-	STATUS_DEVICE_ERROR
+	StatusSuccess Status = iota
+	StatusNoMemory
+	StatusInvalidRestore
+	StatusInvalidPopGroup
+	StatusNoCurrentPoint
+	StatusInvalidMatrix
+	StatusInvalidStatus
+	StatusNullPointer
+	StatusInvalidString
+	StatusInvalidPathData
+	StatusReadError
+	StatusWriteError
+	StatusSurfaceFinished
+	StatusSurfaceTypeMismatch
+	StatusPatternTypeMismatch
+	StatusInvalidContent
+	StatusInvalidFormat
+	StatusInvalidVisual
+	StatusFileNotFound
+	StatusInvalidDash
+	StatusInvalidDscComment
+	StatusInvalidIndex
+	StatusClipNotRepresentable
+	StatusTempFileError
+	StatusInvalidStride
+	StatusFontTypeMismatch
+	StatusUserFontImmutable
+	StatusUserFontError
+	StatusNegativeCount
+	StatusInvalidClusters
+	StatusInvalidSlant
+	StatusInvalidWeight
+	StatusInvalidSize
+	StatusUserFontNotImplemented
+	statusDeviceTypeMismatch
+	StatusDeviceError
 )
 
-// cairo_content_t
+// Content cairo_content_t
 type Content int
 
+// Content constants
 const (
-	CONTENT_COLOR       Content = 0x1000
-	CONTENT_ALPHA       Content = 0x2000
-	CONTENT_COLOR_ALPHA Content = 0x3000
+	ContentColor      Content = 0x1000
+	ContentAlpha      Content = 0x2000
+	ContentColorAlpha Content = 0x3000
 )
 
-// cairo_operator_t
+// Operator cairo_operator_t
 type Operator int
 
+// Operator constants
 const (
-	OPERATOR_CLEAR = iota
+	OperatorClear = iota
 
-	OPERATOR_SOURCE
-	OPERATOR_OVER
-	OPERATOR_IN
-	OPERATOR_OUT
-	OPERATOR_ATOP
+	OperatorSource
+	OperatorOver
+	OperatorIn
+	OperatorOut
+	OperatorAtop
 
-	OPERATOR_DEST
-	OPERATOR_DEST_OVER
-	OPERATOR_DEST_IN
-	OPERATOR_DEST_OUT
-	OPERATOR_DEST_ATOP
+	OperatorDest
+	OperatorDestOver
+	OperatorDestIn
+	OperatorDestOut
+	OperatorDestAtop
 
-	OPERATOR_XOR
-	OPERATOR_ADD
-	OPERATOR_SATURATE
+	OperatorXor
+	OperatorAdd
+	OperatorSaturate
 
-	OPERATOR_MULTIPLY
-	OPERATOR_SCREEN
-	OPERATOR_OVERLAY
-	OPERATOR_DARKEN
-	OPERATOR_LIGHTEN
-	OPERATOR_COLOR_DODGE
-	OPERATOR_COLOR_BURN
-	OPERATOR_HARD_LIGHT
-	OPERATOR_SOFT_LIGHT
-	OPERATOR_DIFFERENCE
-	OPERATOR_EXCLUSION
-	OPERATOR_HSL_HUE
-	OPERATOR_HSL_SATURATION
-	OPERATOR_HSL_COLOR
-	OPERATOR_HSL_LUMINOSITY
+	OperatorMultiply
+	OperatorScreen
+	OperatorOverlay
+	OperatorDarken
+	OperatorLighten
+	OperatorColorDodge
+	OperatorColorBurn
+	OperatorHardLight
+	OperatorSoftLight
+	OperatorDifference
+	OperatorExclusion
+	OperatorHslHue
+	OperatorHslSaturation
+	OperatorHslColor
+	OperatorHslLuminosity
 )
 
-// cairo_antialias_t
+// Antialias cairo_antialias_t
 type Antialias int
 
+// Antialias constants
 const (
-	ANTIALIAS_DEFAULT Antialias = iota
-	ANTIALIAS_NONE
-	ANTIALIAS_GRAY
-	ANTIALIAS_SUBPIXEL
+	AntialiasDefault Antialias = iota
+	AntialiasNone
+	AntialiasGray
+	AntialiasSubpixel
 )
 
-// cairo_fill_rule_t
+// FillRule cairo_fill_rule_t
 type FillRule int
 
+// FillRule constants
 const (
-	FILL_RULE_WINDING FillRule = iota
-	FILL_RULE_EVEN_ODD
+	FillRuleWinding FillRule = iota
+	FillRuleEvenOdd
 )
 
-// cairo_line_cap_t
+// LineCap cairo_line_cap_t
 type LineCap int
 
+// LineCap constants
 const (
-	LINE_CAP_BUTT LineCap = iota
-	LINE_CAP_ROUND
-	LINE_CAP_SQUARE
+	LineCapButt LineCap = iota
+	LineCapRound
+	LineCapSquare
 )
 
-// cairo_line_cap_join_t
+// LineJoin cairo_line_cap_join_t
 type LineJoin int
 
+// LineJoin constants
 const (
-	LINE_JOIN_MITER LineJoin = iota
-	LINE_JOIN_ROUND
-	LINE_JOIN_BEVEL
+	LineJoinMiter LineJoin = iota
+	LineJoinRound
+	LineJoinBevel
 )
 
-// cairo_text_cluster_flag_t
+// TextClusterFlag cairo_text_cluster_flag_t
 type TextClusterFlag int
 
+// TextClusterFlag constants
 const (
-	TEXT_CLUSTER_FLAG_BACKWARD TextClusterFlag = 0x00000001
+	TextClusterFlagBackward TextClusterFlag = 0x00000001
 )
 
-// cairo_font_slant_t values
+// cairo_font_slant_t constants
 const (
-	FONT_SLANT_NORMAL = iota
-	FONT_SLANT_ITALIC
-	FONT_SLANT_OBLIQUE
+	FontSlantNormal = iota
+	FontSlantItalic
+	FontSlantOblique
 )
 
 // cairo_font_weight_t values
 const (
-	FONT_WEIGHT_NORMAL = iota
-	FONT_WEIGHT_BOLD
+	FontWeightNormal = iota
+	FontWeightBold
 )
 
 // cairo_subpixel_order_t values
 const (
-	SUBPIXEL_ORDER_DEFAULT = iota
-	SUBPIXEL_ORDER_RGB
-	SUBPIXEL_ORDER_BGR
-	SUBPIXEL_ORDER_VRGB
-	SUBPIXEL_ORDER_VBGR
+	SubpixelOrderDefault = iota
+	SubpixelOrderRGB
+	SubpixelOrderBGR
+	SubpixelOrderVRGB
+	SubpixelOrderVBGR
 )
 
 // cairo_hint_style_t values
 const (
-	HINT_STYLE_DEFAULT = iota
-	HINT_STYLE_NONE
-	HINT_STYLE_SLIGHT
-	HINT_STYLE_MEDIUM
-	HINT_STYLE_FULL
+	HintStyleDefault = iota
+	HintStyleNone
+	HintStyleSlight
+	HintStyleMedium
+	HintStyleFull
 )
 
 // cairo_hint_metrics_t values
 const (
-	HINT_METRICS_DEFAULT = iota
-	HINT_METRICS_OFF
-	HINT_METRICS_ON
+	HintMetricsDefault = iota
+	HintMetricsOff
+	HintMetricsOn
 )
 
-// cairo_font_type_t
+// FontType cairo_font_type_t
 type FontType int
 
+// FontType constants
 const (
-	FONT_TYPE_TOY FontType = iota
-	FONT_TYPE_FT
-	FONT_TYPE_WIN32
-	FONT_TYPE_QUARTZ
-	FONT_TYPE_USER
+	FontTypeToy FontType = iota
+	FontTypeFt
+	FontTypeWin32
+	FontTypeQuartz
+	FontTypeUser
 )
 
-// cairo_path_data_type_t
+// PathDataType cairo_path_data_type_t
 type PathDataType int
 
+// PathDataType constants
 const (
-	PATH_MOVE_TO PathDataType = iota
-	PATH_LINE_TO
-	PATH_CURVE_TO
-	PATH_CLOSE_PATH
+	PathMoveTo PathDataType = iota
+	PathLineTo
+	PathCurveTo
+	PathClosePath
 )
 
-// cairo_surface_type_t
+// SurfaceType cairo_surface_type_t
 type SurfaceType int
 
+// SurfaceType constants
 const (
-	SURFACE_TYPE_IMAGE SurfaceType = iota
-	SURFACE_TYPE_PDF
-	SURFACE_TYPE_PS
-	SURFACE_TYPE_XLIB
-	SURFACE_TYPE_XCB
-	SURFACE_TYPE_GLITZ
-	SURFACE_TYPE_QUARTZ
-	SURFACE_TYPE_WIN32
-	SURFACE_TYPE_BEOS
-	SURFACE_TYPE_DIRECTFB
-	SURFACE_TYPE_SVG
-	SURFACE_TYPE_OS2
-	SURFACE_TYPE_WIN32_PRINTING
-	SURFACE_TYPE_QUARTZ_IMAGE
-	SURFACE_TYPE_SCRIPT
-	SURFACE_TYPE_QT
-	SURFACE_TYPE_RECORDING
-	SURFACE_TYPE_VG
-	SURFACE_TYPE_GL
-	SURFACE_TYPE_DRM
-	SURFACE_TYPE_TEE
-	SURFACE_TYPE_XML
-	SURFACE_TYPE_SKIA
-	SURFACE_TYPE_SUBSURFACE
+	SurfaceTypeImage SurfaceType = iota
+	SurfaceTypePDF
+	SurfaceTypePS
+	SurfaceTypeXlib
+	SurfaceTypeXcb
+	SurfaceTypeGlitz
+	SurfaceTypeQuartz
+	SurfaceTypeWin32
+	SurfaceTypeBeos
+	SurfaceTypeDirectfb
+	SurfaceTypeSVG
+	SurfaceTypeOS2
+	SurfaceTypeWin32PrintinG
+	SurfaceTypeQuartzImage
+	SurfaceTypeScript
+	SurfaceTypeQt
+	SurfaceTypeRecording
+	SurfaceTypeVg
+	SurfaceTypeGl
+	SurfaceTypeDrm
+	SurfaceTypeTee
+	SurfaceTypeXML
+	SurfaceTypeSkia
+	SurfaceTypeSubsurface
 )
 
+// Format cairo_format_t
 type Format int
 
-func (self Format) StrideForWidth(width int) int {
-	return int(C.cairo_format_stride_for_width(C.cairo_format_t(self), C.int(width)))
+// StrideForWidth ...
+func (f Format) StrideForWidth(width int) int {
+	return int(C.cairo_format_stride_for_width(C.cairo_format_t(f), C.int(width)))
 }
 
-// cairo_format_t values
+// Format constants
 const (
-	FORMAT_INVALID   Format = -1
-	FORMAT_ARGB32    Format = 0
-	FORMAT_RGB24     Format = 1
-	FORMAT_A8        Format = 2
-	FORMAT_A1        Format = 3
-	FORMAT_RGB16_565 Format = 4
-	FORMAT_RGB30     Format = 5
+	FormatInvalid  Format = -1
+	FormatARGB32   Format = 0
+	FormatRGB24    Format = 1
+	FormatA8       Format = 2
+	FormatA1       Format = 3
+	FormatRGB16565 Format = 4
+	FormatRGB30    Format = 5
 )
 
-// cairo_pattern_type_t
-type PatternType int
-
-const (
-	PATTERN_TYPE_SOLID PatternType = iota
-	PATTERN_TYPE_SURFACE
-	PATTERN_TYPE_LINEAR
-	PATTERN_TYPE_RADIAL
-)
-
-// cairo_extend_t
+// Extent cairo_extent_t
 type Extent int
 
+// Extent constants
 const (
-	EXTEND_NONE Extent = iota
-	EXTEND_REPEAT
-	EXTEND_REFLECT
-	EXTEND_PAD
+	ExtendNone Extent = iota
+	ExtendRepeat
+	ExtendReflect
+	ExtendPad
 )
 
-// cairo_filter_t
+// Filter cairo_filter_t
 type Filter int
 
+// Filter constants
 const (
-	CAIRO_FILTER_FAST Filter = iota
-	CAIRO_FILTER_GOOD
-	CAIRO_FILTER_BEST
-	CAIRO_FILTER_NEAREST
-	CAIRO_FILTER_BILINEAR
-	CAIRO_FILTER_GAUSSIAN
+	CairoFilterFast Filter = iota
+	CairoFilterGood
+	CairoFilterBest
+	CairoFilterNearest
+	CairoFilterBilinear
+	CairoFilterGaussian
 )
 
+// RegionOverlap ...
 type RegionOverlap int
 
+// RegionOverlap constants
 const (
-	REGION_OVERLAP_IN RegionOverlap = iota
-	REGION_OVERLAP_OUT
-	REGION_OVERLAP_PART
+	RegionOverlapIn RegionOverlap = iota
+	RegionOverlapOut
+	RegionOverlapPart
 )
 
+// DeviceType ...
 type DeviceType int
 
+// DeviceType constants
 const (
-	DEVICE_TYPE_DRM DeviceType = iota
-	DEVICE_TYPE_GL
-	DEVICE_TYPE_SCRIPT
-	DEVICE_TYPE_XCB
-	DEVICE_TYPE_XLIB
-	DEVICE_TYPE_XML
+	DeviceTypeDrm DeviceType = iota
+	DeviceTypeGl
+	DeviceTypeScript
+	DeviceTypeXcb
+	DeviceTypeXlib
+	DeviceTypeXML
 )
 
+// MimeType constants
 const (
-	MIME_TYPE_JPEG = "image/jpeg"
-	MIME_TYPE_PNG  = "image/png"
-	MIME_TYPE_JP2  = "image/jp2"
-	MIME_TYPE_URI  = "text/x-uri"
+	MimeTypeJPEG = "image/jpeg"
+	MimeTypePNG  = "image/png"
+	MimeTypeJP2  = "image/jp2"
+	MimeTypeURI  = "text/x-uri"
 )
 
+// PDFVersion ...
 type PDFVersion int
 
-func (self PDFVersion) String() string {
-	return C.GoString(C.cairo_pdf_version_to_string(C.cairo_pdf_version_t(self)))
+func (v PDFVersion) String() string {
+	return C.GoString(C.cairo_pdf_version_to_string(C.cairo_pdf_version_t(v)))
 }
 
+// PDFVersion constants
 const (
-	PDF_VERSION_1_4 PDFVersion = iota
-	PDF_VERSION_1_5
+	PDFVersion14 PDFVersion = iota
+	PDFVersion15
 )
 
+// PSLevel ...
 type PSLevel int
 
-func (self PSLevel) String() string {
-	return C.GoString(C.cairo_ps_level_to_string(C.cairo_ps_level_t(self)))
+func (p PSLevel) String() string {
+	return C.GoString(C.cairo_ps_level_to_string(C.cairo_ps_level_t(p)))
 }
 
+// PSLevel constants
 const (
-	PS_LEVEL_2 PSLevel = iota
-	PS_LEVEL_3
+	PSLevel2 PSLevel = iota
+	PSLevel3
 )
 
+// SVGVersion ...
 type SVGVersion int
 
-func (self SVGVersion) String() string {
-	return C.GoString(C.cairo_svg_version_to_string(C.cairo_svg_version_t(self)))
+func (v SVGVersion) String() string {
+	return C.GoString(C.cairo_svg_version_to_string(C.cairo_svg_version_t(v)))
 }
 
+// SVGVersion constants
 const (
-	SVG_VERSION_1_1 SVGVersion = iota
-	SVG_VERSION_1_2
+	SVGVersion11 SVGVersion = iota
+	SVGVersion12
 )
 
-type Pattern struct {
-	pattern *C.cairo_pattern_t
-}
-
+// Rectangle ...
 type Rectangle struct {
 	X, Y          float64
 	Width, Height float64
 }
 
+// TextCluster ...
 type TextCluster struct {
 	// todo
 }
 
+// TextExtents ...
 type TextExtents struct {
 	Xbearing float64
 	Ybearing float64
@@ -365,33 +379,41 @@ type TextExtents struct {
 	Yadvance float64
 }
 
+// FontExtents ...
 type FontExtents struct {
 	// todo
 }
 
+// FontFace ...
 type FontFace struct {
 	// todo
 }
 
+// FontOptions ...
 type FontOptions struct {
 	// todo
 }
 
+// ScaledFont ...
 type ScaledFont struct {
 	// todo
 }
 
+// Glyph ...
 type Glyph struct {
 	// todo
 }
 
+// Device ...
 type Device struct {
 }
 
+// Version ...
 func Version() int {
 	return int(C.cairo_version())
 }
 
+// VersionString ...
 func VersionString() string {
 	return C.GoString(C.cairo_version_string())
 }

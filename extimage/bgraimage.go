@@ -25,51 +25,55 @@ type BGRA struct {
 	Rect image.Rectangle
 }
 
-func (self *BGRA) ColorModel() color.Model {
+// ColorModel ...
+func (img *BGRA) ColorModel() color.Model {
 	return BGRAColorModel
 }
 
-func (self *BGRA) Bounds() image.Rectangle {
-	return self.Rect
+// Bounds ...
+func (img *BGRA) Bounds() image.Rectangle {
+	return img.Rect
 }
 
-func (self *BGRA) At(x, y int) color.Color {
-	if !(image.Point{x, y}.In(self.Rect)) {
+// At ...
+func (img *BGRA) At(x, y int) color.Color {
+	if !(image.Point{x, y}.In(img.Rect)) {
 		return BGRAColor{}
 	}
-	i := self.PixOffset(x, y)
+	i := img.PixOffset(x, y)
 	if littleEndian {
-		return BGRAColor{B: self.Pix[i+0], G: self.Pix[i+1], R: self.Pix[i+2], A: self.Pix[i+3]}
-	} else {
-		return BGRAColor{A: self.Pix[i+0], R: self.Pix[i+1], G: self.Pix[i+2], B: self.Pix[i+3]}
+		return BGRAColor{B: img.Pix[i+0], G: img.Pix[i+1], R: img.Pix[i+2], A: img.Pix[i+3]}
 	}
+	return BGRAColor{A: img.Pix[i+0], R: img.Pix[i+1], G: img.Pix[i+2], B: img.Pix[i+3]}
 }
 
 // PixOffset returns the index of the first element of Pix that corresponds to
 // the pixel at (x, y).
-func (self *BGRA) PixOffset(x, y int) int {
-	return (y-self.Rect.Min.Y)*self.Stride + (x-self.Rect.Min.X)*4
+func (img *BGRA) PixOffset(x, y int) int {
+	return (y-img.Rect.Min.Y)*img.Stride + (x-img.Rect.Min.X)*4
 }
 
-func (self *BGRA) Set(x, y int, c color.Color) {
-	if !(image.Point{x, y}.In(self.Rect)) {
+// Set ...
+func (img *BGRA) Set(x, y int, c color.Color) {
+	if !(image.Point{x, y}.In(img.Rect)) {
 		return
 	}
-	i := self.PixOffset(x, y)
+	i := img.PixOffset(x, y)
 	c1 := BGRAColorModel.Convert(c).(BGRAColor)
 	if littleEndian {
-		self.Pix[i+0] = c1.B
-		self.Pix[i+1] = c1.G
-		self.Pix[i+2] = c1.R
-		self.Pix[i+3] = c1.A
+		img.Pix[i+0] = c1.B
+		img.Pix[i+1] = c1.G
+		img.Pix[i+2] = c1.R
+		img.Pix[i+3] = c1.A
 	} else {
-		self.Pix[i+0] = c1.A
-		self.Pix[i+1] = c1.R
-		self.Pix[i+2] = c1.G
-		self.Pix[i+3] = c1.B
+		img.Pix[i+0] = c1.A
+		img.Pix[i+1] = c1.R
+		img.Pix[i+2] = c1.G
+		img.Pix[i+3] = c1.B
 	}
 }
 
+// BGRAColorModel ...
 var BGRAColorModel = color.ModelFunc(
 	func(c color.Color) color.Color {
 		if _, ok := c.(BGRAColor); ok {
@@ -86,6 +90,7 @@ type BGRAColor struct {
 	B, G, R, A uint8
 }
 
+// RGBA ...
 func (c BGRAColor) RGBA() (r, g, b, a uint32) {
 	r = uint32(c.R)
 	r |= r << 8
