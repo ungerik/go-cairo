@@ -211,6 +211,12 @@ func (s *Surface) SetLineWidth(width float64) {
 	C.cairo_set_line_width(s.context, C.double(width))
 }
 
+// GetLineWidth sets the pixel width that will be used when drawing lines.
+func (s *Surface) GetLineWidth() float64 {
+	w := C.cairo_get_line_width(s.context)
+	return float64(w)
+}
+
 // SetLineCap sets the form of line cap used when drawing lines.
 func (s *Surface) SetLineCap(lineCap LineCap) {
 	C.cairo_set_line_cap(s.context, C.cairo_line_cap_t(lineCap))
