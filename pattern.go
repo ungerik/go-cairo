@@ -153,38 +153,47 @@ func CreateMesh() *Pattern {
 	return &Pattern{p}
 }
 
+// BeginPatch starts a patch definition.
 func (p *Pattern) BeginPatch() {
 	C.cairo_mesh_pattern_begin_patch(p.pattern)
 }
 
+// EndPatch completes a patch definition.
 func (p *Pattern) EndPatch() {
 	C.cairo_mesh_pattern_end_patch(p.pattern)
 }
 
+// MoveTo moves to an x, y point.
 func (p *Pattern) MoveTo(x, y float64) {
 	C.cairo_mesh_pattern_move_to(p.pattern, C.double(x), C.double(y))
 }
 
+// LineTo draws a line to an x, y point.
 func (p *Pattern) LineTo(x, y float64) {
 	C.cairo_mesh_pattern_line_to(p.pattern, C.double(x), C.double(y))
 }
 
+// CurveTo draws a bezier curve to a point through two control points.
 func (p *Pattern) CurveTo(x1, y1, x2, y2, x3, y3 float64) {
 	C.cairo_mesh_pattern_curve_to(p.pattern, C.double(x1), C.double(y1), C.double(x2), C.double(y2), C.double(x3), C.double(y3))
 }
 
+// SetControlPoint sets the x, y position of a given control point.
 func (p *Pattern) SetControlPoint(pointNum uint, x, y float64) {
 	C.cairo_mesh_pattern_set_control_point(p.pattern, C.uint(pointNum), C.double(x), C.double(y))
 }
 
+// SetCornerColorRGB sets the RGB color for a given corner.
 func (p *Pattern) SetCornerColorRGB(cornerNum uint, r, g, b float64) {
 	C.cairo_mesh_pattern_set_corner_color_rgb(p.pattern, C.uint(cornerNum), C.double(r), C.double(g), C.double(b))
 }
 
+// SetCornerColorRGBA sets the RGBA color for a given corner.
 func (p *Pattern) SetCornerColorRGBA(cornerNum uint, r, g, b, a float64) {
 	C.cairo_mesh_pattern_set_corner_color_rgba(p.pattern, C.uint(cornerNum), C.double(r), C.double(g), C.double(b), C.double(a))
 }
 
+// GetPatchCount returns the number of patches defined for this pattern.
 func (p *Pattern) GetPatchCount() uint {
 	var count C.uint
 	C.cairo_mesh_pattern_get_patch_count(p.pattern, &count)
@@ -196,6 +205,7 @@ func (p *Pattern) GetPatchCount() uint {
 // 	return C.cairo_mesh_pattern_get_path(p.pattern, C.uint(patchNum))
 // }
 
+// GetControlPoint returns the control point for a given patch corner.
 func (p *Pattern) GetControlPoint(patchNum, pointNum uint) (float64, float64) {
 	var x C.double
 	var y C.double
@@ -203,6 +213,7 @@ func (p *Pattern) GetControlPoint(patchNum, pointNum uint) (float64, float64) {
 	return float64(x), float64(y)
 }
 
+// GetCornerColorRGBA returns the RGBA color for a given patch corner.
 func (p *Pattern) GetCornerColorRGBA(patchNum, pointNum uint) (float64, float64, float64, float64) {
 	var r C.double
 	var g C.double
@@ -212,9 +223,10 @@ func (p *Pattern) GetCornerColorRGBA(patchNum, pointNum uint) (float64, float64,
 	return float64(r), float64(g), float64(b), float64(a)
 }
 
+// TODO:
 // cairo_pattern_t *	cairo_pattern_create_for_surface ()
 // cairo_status_t	cairo_pattern_get_surface ()
-// cairo_pattern_t *	cairo_pattern_reherence ()
+// cairo_pattern_t *	cairo_pattern_reference ()
 // void	cairo_pattern_destroy ()
 // cairo_status_t	cairo_pattern_status ()
 // void	cairo_pattern_set_extend ()
