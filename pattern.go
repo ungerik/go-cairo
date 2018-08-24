@@ -143,3 +143,85 @@ func (p *Pattern) GetMatrix() *Matrix {
 		float64(matrix.y0),
 	}
 }
+
+///////////////////////////
+// mesh methods
+
+// CreateMesh creates a mesh pattern
+func CreateMesh() *Pattern {
+	p := C.cairo_pattern_create_mesh()
+	return &Pattern{p}
+}
+
+func (p *Pattern) BeginPatch() {
+	C.cairo_mesh_pattern_begin_patch(p.pattern)
+}
+
+func (p *Pattern) EndPatch() {
+	C.cairo_mesh_pattern_end_patch(p.pattern)
+}
+
+func (p *Pattern) MoveTo(x, y float64) {
+	C.cairo_mesh_pattern_move_to(p.pattern, C.double(x), C.double(y))
+}
+
+func (p *Pattern) LineTo(x, y float64) {
+	C.cairo_mesh_pattern_line_to(p.pattern, C.double(x), C.double(y))
+}
+
+func (p *Pattern) CurveTo(x1, y1, x2, y2, x3, y3 float64) {
+	C.cairo_mesh_pattern_curve_to(p.pattern, C.double(x1), C.double(y1), C.double(x2), C.double(y2), C.double(x3), C.double(y3))
+}
+
+func (p *Pattern) SetControlPoint(pointNum uint, x, y float64) {
+	C.cairo_mesh_pattern_set_control_point(p.pattern, C.uint(pointNum), C.double(x), C.double(y))
+}
+
+func (p *Pattern) SetCornerColorRGB(cornerNum uint, r, g, b float64) {
+	C.cairo_mesh_pattern_set_corner_color_rgb(p.pattern, C.uint(cornerNum), C.double(r), C.double(g), C.double(b))
+}
+
+func (p *Pattern) SetCornerColorRGBA(cornerNum uint, r, g, b, a float64) {
+	C.cairo_mesh_pattern_set_corner_color_rgba(p.pattern, C.uint(cornerNum), C.double(r), C.double(g), C.double(b), C.double(a))
+}
+
+func (p *Pattern) GetPatchCount() uint {
+	var count C.uint
+	C.cairo_mesh_pattern_get_patch_count(p.pattern, &count)
+	return uint(count)
+}
+
+// TODO: need to implement cairo_path_t
+// func (p *Pattern) GetPath(patchNum uint) uint {
+// 	return C.cairo_mesh_pattern_get_path(p.pattern, C.uint(patchNum))
+// }
+
+func (p *Pattern) GetControlPoint(patchNum, pointNum uint) (float64, float64) {
+	var x C.double
+	var y C.double
+	C.cairo_mesh_pattern_get_control_point(p.pattern, C.uint(patchNum), C.uint(pointNum), &x, &y)
+	return float64(x), float64(y)
+}
+
+func (p *Pattern) GetCornerColorRGBA(patchNum, pointNum uint) (float64, float64, float64, float64) {
+	var r C.double
+	var g C.double
+	var b C.double
+	var a C.double
+	C.cairo_mesh_pattern_get_corner_color_rgba(p.pattern, C.uint(patchNum), C.uint(pointNum), &r, &g, &b, &a)
+	return float64(r), float64(g), float64(b), float64(a)
+}
+
+// cairo_pattern_t *	cairo_pattern_create_for_surface ()
+// cairo_status_t	cairo_pattern_get_surface ()
+// cairo_pattern_t *	cairo_pattern_reherence ()
+// void	cairo_pattern_destroy ()
+// cairo_status_t	cairo_pattern_status ()
+// void	cairo_pattern_set_extend ()
+// cairo_extend_t	cairo_pattern_get_extend ()
+// void	cairo_pattern_set_filter ()
+// cairo_filter_t	cairo_pattern_get_filter ()
+// cairo_pattern_type_t	cairo_pattern_get_type ()
+// unsigned int	cairo_pattern_get_reference_count ()
+// cairo_status_t	cairo_pattern_set_user_data ()
+// void *	cairo_pattern_get_user_data ()
