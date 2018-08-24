@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	colors()
+	shapes()
 }
 
 func text() {
@@ -69,6 +69,50 @@ func colors() {
 			surface.Fill()
 		}
 	}
+
+	surface.WriteToPNG("out.png")
+	surface.Finish()
+}
+
+func gradients() {
+	surface := cairo.NewSurface(cairo.FormatARGB32, 600, 300)
+	radialPattern := cairo.CreateRadialGradient(150, 150, 0, 150, 150, 150)
+	radialPattern.AddColorStopRGB(0, 1, 0, 0)
+	radialPattern.AddColorStopRGB(1, 0, 0, 1)
+	surface.SetSource(radialPattern)
+	surface.Rectangle(0, 0, 300, 300)
+	surface.Fill()
+
+	linearPattern := cairo.CreateLinearGradient(300, 0, 600, 300)
+	linearPattern.AddColorStopRGB(0, 1, 0, 0)
+	linearPattern.AddColorStopRGB(1, 0, 0, 1)
+	surface.SetSource(linearPattern)
+	surface.Rectangle(300, 0, 300, 300)
+	surface.Fill()
+
+	surface.WriteToPNG("out.png")
+	surface.Finish()
+}
+
+func mesh() {
+	surface := cairo.NewSurface(cairo.FormatARGB32, 600, 600)
+	pattern := cairo.CreateMesh()
+
+	pattern.BeginPatch()
+	pattern.MoveTo(100, 100)
+	pattern.LineTo(500, 100)
+	pattern.LineTo(500, 500)
+	pattern.LineTo(100, 500)
+
+	pattern.SetCornerColorRGB(0, 1, 0, 0)
+	pattern.SetCornerColorRGB(1, 0, 1, 0)
+	pattern.SetCornerColorRGB(2, 0, 0, 1)
+	pattern.SetCornerColorRGB(3, 1, 1, 0)
+	pattern.EndPatch()
+
+	surface.SetSource(pattern)
+	surface.Rectangle(0, 0, 600, 600)
+	surface.Fill()
 
 	surface.WriteToPNG("out.png")
 	surface.Finish()
