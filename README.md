@@ -25,36 +25,36 @@ Future plans
 
 ### Installation:
 
-Install cairo:
+1. Install cairo:
 
-* For Debian and Debian derivatives including Ubuntu:
+  * For Debian and Debian derivatives including Ubuntu:
 
-  `sudo apt-get install libcairo2-dev`
+    `sudo apt-get install libcairo2-dev`
 
-* For Fedora:
+  * For Fedora:
 
-  `sudo yum install cairo-devel`
+    `sudo yum install cairo-devel`
 
-* For openSUSE:
+  * For openSUSE:
 
-  `zypper install cairo-devel`
-	
-* For MacOS HomeBrew:
+    `zypper install cairo-devel`
+          
+  * For MacOS HomeBrew:
 
-  `brew install cairo`
+    `brew install cairo`
 
-* For MacOS MacPorts:
+  * For MacOS MacPorts:
 
-  `sudo port install cairo`
+    `sudo port install cairo`
 
-* For Windows, install gtk:
+  * For Windows, install gtk:
 
-  `http://www.gtk.org/download/`
+    `http://www.gtk.org/download/`
 
-Install go-cairo
+2. Install go-cairo
 
   `go get github.com/bit101/go-cairo`
 
-Check examples in `go-cairo-examples`
+3. Check examples in `go-cairo-examples`
 
 Copyrights: See LICENSE file
