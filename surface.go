@@ -268,25 +268,25 @@ func (s *Surface) IdentityMatrix() {
 	C.cairo_identity_matrix(s.context)
 }
 
-// UserToDevice ...
+// UserToDevice tbd
 func (s *Surface) UserToDevice(x, y float64) (float64, float64) {
 	C.cairo_user_to_device(s.context, (*C.double)(&x), (*C.double)(&y))
 	return x, y
 }
 
-// UserToDeviceDistance ...
+// UserToDeviceDistance tbd
 func (s *Surface) UserToDeviceDistance(dx, dy float64) (float64, float64) {
 	C.cairo_user_to_device_distance(s.context, (*C.double)(&dx), (*C.double)(&dy))
 	return dx, dy
 }
 
-// DeviceToUser ...
+// DeviceToUser tbd
 func (s *Surface) DeviceToUser(x, y float64) (float64, float64) {
 	C.cairo_device_to_user(s.context, (*C.double)(&x), (*C.double)(&y))
 	return x, y
 }
 
-// DeviceToUserDistance ...
+// DeviceToUserDistance tbd
 func (s *Surface) DeviceToUserDistance(x, y float64) (float64, float64) {
 	C.cairo_device_to_user_distance(s.context, (*C.double)(&x), (*C.double)(&y))
 	return x, y
@@ -338,17 +338,17 @@ func (s *Surface) ArcNegative(xc, yc, radius, angle1, angle2 float64) {
 		C.double(angle1), C.double(angle2))
 }
 
-// RelMoveTo ...
+// RelMoveTo tbd
 func (s *Surface) RelMoveTo(dx, dy float64) {
 	C.cairo_rel_move_to(s.context, C.double(dx), C.double(dy))
 }
 
-// RelLineTo ...
+// RelLineTo tbd
 func (s *Surface) RelLineTo(dx, dy float64) {
 	C.cairo_rel_line_to(s.context, C.double(dx), C.double(dy))
 }
 
-// RelCurveTo ...
+// RelCurveTo tbd
 func (s *Surface) RelCurveTo(dx1, dy1, dx2, dy2, dx3, dy3 float64) {
 	C.cairo_rel_curve_to(s.context,
 		C.double(dx1), C.double(dy1),
@@ -356,19 +356,19 @@ func (s *Surface) RelCurveTo(dx1, dy1, dx2, dy2, dx3, dy3 float64) {
 		C.double(dx3), C.double(dy3))
 }
 
-// Rectangle ...
+// Rectangle tbd
 func (s *Surface) Rectangle(x, y, width, height float64) {
 	C.cairo_rectangle(s.context,
 		C.double(x), C.double(y),
 		C.double(width), C.double(height))
 }
 
-// ClosePath ...
+// ClosePath tbd
 func (s *Surface) ClosePath() {
 	C.cairo_close_path(s.context)
 }
 
-// PathExtents ...
+// PathExtents tbd
 func (s *Surface) PathExtents() (left, top, right, bottom float64) {
 	C.cairo_path_extents(s.context,
 		(*C.double)(&left), (*C.double)(&top),
@@ -379,52 +379,52 @@ func (s *Surface) PathExtents() (left, top, right, bottom float64) {
 ///////////////////////////////////////////////////////////////////////////////
 // Painting methods
 
-// Paint ...
+// Paint tbd
 func (s *Surface) Paint() {
 	C.cairo_paint(s.context)
 }
 
-// PaintWithAlpha ...
+// PaintWithAlpha tbd
 func (s *Surface) PaintWithAlpha(alpha float64) {
 	C.cairo_paint_with_alpha(s.context, C.double(alpha))
 }
 
-// Mask ...
+// Mask tbd
 func (s *Surface) Mask(pattern Pattern) {
 	C.cairo_mask(s.context, pattern.pattern)
 }
 
-// MaskSurface ...
+// MaskSurface tbd
 func (s *Surface) MaskSurface(surface *Surface, surfaceX, surfaceY float64) {
 	C.cairo_mask_surface(s.context, surface.surface, C.double(surfaceX), C.double(surfaceY))
 }
 
-// Stroke ...
+// Stroke tbd
 func (s *Surface) Stroke() {
 	C.cairo_stroke(s.context)
 }
 
-// StrokePreserve ...
+// StrokePreserve tbd
 func (s *Surface) StrokePreserve() {
 	C.cairo_stroke_preserve(s.context)
 }
 
-// Fill ...
+// Fill tbd
 func (s *Surface) Fill() {
 	C.cairo_fill(s.context)
 }
 
-// FillPreserve ...
+// FillPreserve tbd
 func (s *Surface) FillPreserve() {
 	C.cairo_fill_preserve(s.context)
 }
 
-// CopyPage ...
+// CopyPage tbd
 func (s *Surface) CopyPage() {
 	C.cairo_copy_page(s.context)
 }
 
-// ShowPage ...
+// ShowPage tbd
 func (s *Surface) ShowPage() {
 	C.cairo_show_page(s.context)
 }
@@ -432,12 +432,12 @@ func (s *Surface) ShowPage() {
 ///////////////////////////////////////////////////////////////////////////////
 // Insideness testing
 
-// InStroke ...
+// InStroke tbd
 func (s *Surface) InStroke(x, y float64) bool {
 	return C.cairo_in_stroke(s.context, C.double(x), C.double(y)) != 0
 }
 
-// InFill ...
+// InFill tbd
 func (s *Surface) InFill(x, y float64) bool {
 	return C.cairo_in_fill(s.context, C.double(x), C.double(y)) != 0
 }
@@ -445,7 +445,7 @@ func (s *Surface) InFill(x, y float64) bool {
 ///////////////////////////////////////////////////////////////////////////////
 // Rectangular extents
 
-// StrokeExtents ...
+// StrokeExtents tbd
 func (s *Surface) StrokeExtents() (left, top, right, bottom float64) {
 	C.cairo_stroke_extents(s.context,
 		(*C.double)(&left), (*C.double)(&top),
@@ -453,7 +453,7 @@ func (s *Surface) StrokeExtents() (left, top, right, bottom float64) {
 	return left, top, right, bottom
 }
 
-// FillExtents ...
+// FillExtents tbd
 func (s *Surface) FillExtents() (left, top, right, bottom float64) {
 	C.cairo_fill_extents(s.context,
 		(*C.double)(&left), (*C.double)(&top),
@@ -464,22 +464,22 @@ func (s *Surface) FillExtents() (left, top, right, bottom float64) {
 ///////////////////////////////////////////////////////////////////////////////
 // Clipping methods
 
-// ResetClip ...
+// ResetClip tbd
 func (s *Surface) ResetClip() {
 	C.cairo_reset_clip(s.context)
 }
 
-// Clip ...
+// Clip tbd
 func (s *Surface) Clip() {
 	C.cairo_clip(s.context)
 }
 
-// ClipPreserve ...
+// ClipPreserve tbd
 func (s *Surface) ClipPreserve() {
 	C.cairo_clip_preserve(s.context)
 }
 
-// ClipExtents ...
+// ClipExtents tbd
 func (s *Surface) ClipExtents() (left, top, right, bottom float64) {
 	C.cairo_clip_extents(s.context,
 		(*C.double)(&left), (*C.double)(&top),
@@ -487,7 +487,7 @@ func (s *Surface) ClipExtents() (left, top, right, bottom float64) {
 	return left, top, right, bottom
 }
 
-// ClipRectangleList ...
+// ClipRectangleList tbd
 func (s *Surface) ClipRectangleList() ([]Rectangle, Status) {
 	list := C.cairo_copy_clip_rectangle_list(s.context)
 	defer C.cairo_rectangle_list_destroy(list)
@@ -499,82 +499,82 @@ func (s *Surface) ClipRectangleList() ([]Rectangle, Status) {
 ///////////////////////////////////////////////////////////////////////////////
 // Font/Text methods
 
-// SelectFontFace ...
+// SelectFontFace tbd
 func (s *Surface) SelectFontFace(name string, fontSlant, fontWeight int) {
 	str := C.CString(name)
 	C.cairo_select_font_face(s.context, str, C.cairo_font_slant_t(fontSlant), C.cairo_font_weight_t(fontWeight))
-	C.free(unsafe.Pointer(s))
+	C.free(unsafe.Pointer(str))
 }
 
-// SetFontSize ...
+// SetFontSize tbd
 func (s *Surface) SetFontSize(size float64) {
 	C.cairo_set_font_size(s.context, C.double(size))
 }
 
-// SetFontMatrix ...
+// SetFontMatrix tbd
 func (s *Surface) SetFontMatrix(matrix Matrix) {
 	C.cairo_set_font_matrix(s.context, matrix.Native())
 }
 
-// SetFontOptions ...
+// SetFontOptions tbd
 func (s *Surface) SetFontOptions(fontOptions *FontOptions) {
 	panic("not implemented") // todo
 }
 
-// GetFontOptions ...
+// GetFontOptions tbd
 func (s *Surface) GetFontOptions() *FontOptions {
 	panic("not implemented") // todo
 }
 
-// SetFontFace ...
+// SetFontFace tbd
 func (s *Surface) SetFontFace(fontFace *FontFace) {
 	panic("not implemented") // todo
 }
 
-// GetFontFace ...
+// GetFontFace tbd
 func (s *Surface) GetFontFace() *FontFace {
 	panic("not implemented") // todo
 }
 
-// SetScaledFont ...
+// SetScaledFont tbd
 func (s *Surface) SetScaledFont(scaledFont *ScaledFont) {
 	panic("not implemented") // todo
 }
 
-// GetScaledFont ...
+// GetScaledFont tbd
 func (s *Surface) GetScaledFont() *ScaledFont {
 	panic("not implemented") // todo
 }
 
-// ShowText ...
+// ShowText tbd
 func (s *Surface) ShowText(text string) {
 	cs := C.CString(text)
 	C.cairo_show_text(s.context, cs)
 	C.free(unsafe.Pointer(cs))
 }
 
-// ShowGlyphs ...
+// ShowGlyphs tbd
 func (s *Surface) ShowGlyphs(glyphs []Glyph) {
 	panic("not implemented") // todo
 }
 
-// ShowTextGlyphs ...
+// ShowTextGlyphs tbd
 func (s *Surface) ShowTextGlyphs(text string, glyphs []Glyph, clusters []TextCluster, flags TextClusterFlag) {
 }
 
-// TextPath ...
+// TextPath tbd
 func (s *Surface) TextPath(text string) {
 	cs := C.CString(text)
 	C.cairo_text_path(s.context, cs)
 	C.free(unsafe.Pointer(cs))
 }
 
-// GlyphPath ...
+// GlyphPath tbd
 func (s *Surface) GlyphPath(glyphs []Glyph) {
 	panic("not implemented") // todo
 }
 
-// TextExtents ...
+// TextExtents tbd
 func (s *Surface) TextExtents(text string) *TextExtents {
 	cte := C.cairo_text_extents_t{}
 	cs := C.CString(text)
@@ -591,13 +591,13 @@ func (s *Surface) TextExtents(text string) *TextExtents {
 	return te
 }
 
-// GlyphExtents ...
+// GlyphExtents tbd
 func (s *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
 	panic("not implemented") // todo
 	//C.cairo_text_extents
 }
 
-// FontExtents ...
+// FontExtents tbd
 func (s *Surface) FontExtents() *FontExtents {
 	panic("not implemented") // todo
 	//C.cairo_text_extents
@@ -606,7 +606,7 @@ func (s *Surface) FontExtents() *FontExtents {
 ///////////////////////////////////////////////////////////////////////////////
 // Error status queries
 
-// Status ...
+// Status tbd
 func (s *Surface) Status() Status {
 	return Status(C.cairo_status(s.context))
 }
@@ -617,7 +617,7 @@ func (s *Surface) Status() Status {
 ///////////////////////////////////////////////////////////////////////////////
 // Surface manipulation
 
-// CreateForRectangle ...
+// CreateForRectangle tbd
 func (s *Surface) CreateForRectangle(x, y, width, height float64) *Surface {
 	return &Surface{
 		context: s.context,
@@ -626,44 +626,44 @@ func (s *Surface) CreateForRectangle(x, y, width, height float64) *Surface {
 	}
 }
 
-// Finish ...
+// Finish tbd
 func (s *Surface) Finish() {
 	C.cairo_surface_finish(s.surface)
 }
 
-// Destroy ...
+// Destroy tbd
 func (s *Surface) Destroy() {
 	C.cairo_destroy(s.context)
 	C.cairo_surface_destroy(s.surface)
 }
 
-// GetDevice ...
+// GetDevice tbd
 func (s *Surface) GetDevice() *Device {
 	//C.cairo_surface_get_device
 	panic("not implemented") // todo
 }
 
-// GetReferenceCount ...
+// GetReferenceCount tbd
 func (s *Surface) GetReferenceCount() int {
 	return int(C.cairo_surface_get_reference_count(s.surface))
 }
 
-// GetStatus ...
+// GetStatus tbd
 func (s *Surface) GetStatus() Status {
 	return Status(C.cairo_surface_status(s.surface))
 }
 
-// GetType ...
+// GetType tbd
 func (s *Surface) GetType() SurfaceType {
 	return SurfaceType(C.cairo_surface_get_type(s.surface))
 }
 
-// GetContent ...
+// GetContent tbd
 func (s *Surface) GetContent() Content {
 	return Content(C.cairo_surface_get_content(s.surface))
 }
 
-// WriteToPNG ...
+// WriteToPNG tbd
 func (s *Surface) WriteToPNG(filename string) Status {
 
 	cs := C.CString(filename)
@@ -673,47 +673,47 @@ func (s *Surface) WriteToPNG(filename string) Status {
 }
 
 // Already implemented via context split context/surface?
-// ) ...
+// ) tbd
 // func (s *Surface) GetFontOptions() *FontOptions {
 // 	// todo
 // 	// C.cairo_surface_get_font_options (cairo_surface_t      *surface,				cairo_font_options_t *options);
 // 	return nil
 // }
 
-// Flush ...
+// Flush tbd
 func (s *Surface) Flush() {
 	C.cairo_surface_flush(s.surface)
 }
 
-// MarkDirty ...
+// MarkDirty tbd
 func (s *Surface) MarkDirty() {
 	C.cairo_surface_mark_dirty(s.surface)
 }
 
-// MarkDirtyRectangle ...
+// MarkDirtyRectangle tbd
 func (s *Surface) MarkDirtyRectangle(x, y, width, height int) {
 	C.cairo_surface_mark_dirty_rectangle(s.surface,
 		C.int(x), C.int(y), C.int(width), C.int(height))
 }
 
-// SetDeviceOffset ...
+// SetDeviceOffset tbd
 func (s *Surface) SetDeviceOffset(x, y float64) {
 	C.cairo_surface_set_device_offset(s.surface, C.double(x), C.double(y))
 }
 
-// GetDeviceOffset ...
+// GetDeviceOffset tbd
 func (s *Surface) GetDeviceOffset() (x, y float64) {
 	C.cairo_surface_get_device_offset(s.surface, (*C.double)(&x), (*C.double)(&y))
 	return x, y
 }
 
-// SetFallbackResolution ...
+// SetFallbackResolution tbd
 func (s *Surface) SetFallbackResolution(xPixelPerInch, yPixelPerInch float64) {
 	C.cairo_surface_set_fallback_resolution(s.surface,
 		C.double(xPixelPerInch), C.double(yPixelPerInch))
 }
 
-// GetFallbackResolution ...
+// GetFallbackResolution tbd
 func (s *Surface) GetFallbackResolution() (xPixelPerInch, yPixelPerInch float64) {
 	C.cairo_surface_get_fallback_resolution(s.surface,
 		(*C.double)(&xPixelPerInch), (*C.double)(&yPixelPerInch))
@@ -721,24 +721,24 @@ func (s *Surface) GetFallbackResolution() (xPixelPerInch, yPixelPerInch float64)
 }
 
 // Already defined for context
-// ) ...
+// ) tbd
 // func (s *Surface) CopyPage() {
 // 	C.cairo_surface_copy_page(s.surface)
 // }
 
-// ) ...
+// ) tbd
 // func (s *Surface) ShowPage() {
 // 	C.cairo_surface_show_page(s.surface)
 // }
 
-// HasShowTextGlyphs ...
+// HasShowTextGlyphs tbd
 func (s *Surface) HasShowTextGlyphs() bool {
 	return C.cairo_surface_has_show_text_glyphs(s.surface) != 0
 }
 
 // GetData returns a copy of the surfaces raw pixel data.
 // This method also calls Flush.
-// GetData ...
+// GetData tbd
 func (s *Surface) GetData() []byte {
 	s.Flush()
 	dataPtr := C.cairo_image_surface_get_data(s.surface)
@@ -752,7 +752,7 @@ func (s *Surface) GetData() []byte {
 
 // SetData sets the surfaces raw pixel data.
 // This method also calls Flush and MarkDirty.
-// SetData ...
+// SetData tbd
 func (s *Surface) SetData(data []byte) {
 	s.Flush()
 	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(s.surface))
@@ -768,22 +768,22 @@ func (s *Surface) SetData(data []byte) {
 	s.MarkDirty()
 }
 
-// GetFormat ...
+// GetFormat tbd
 func (s *Surface) GetFormat() Format {
 	return Format(C.cairo_image_surface_get_format(s.surface))
 }
 
-// GetWidth ...
+// GetWidth tbd
 func (s *Surface) GetWidth() int {
 	return int(C.cairo_image_surface_get_width(s.surface))
 }
 
-// GetHeight ...
+// GetHeight tbd
 func (s *Surface) GetHeight() int {
 	return int(C.cairo_image_surface_get_height(s.surface))
 }
 
-// GetStride ...
+// GetStride tbd
 func (s *Surface) GetStride() int {
 	return int(C.cairo_image_surface_get_stride(s.surface))
 }
