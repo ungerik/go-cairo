@@ -8,6 +8,7 @@ Forked from Erik Unger's version https://github.com/ungerik/go-cairo
 * cleaned up code to pass the Go linter and Go best practices in general
 * began to flesh out documentation of all methods
 * removed `extimage` package, which, while useful, transcends cairo itself
+* began compiling more a more complete set of examples
 
 Missing features
 * TextCluster
@@ -28,32 +29,32 @@ Install cairo:
 
 * For Debian and Debian derivatives including Ubuntu:
 
-	sudo apt-get install libcairo2-dev
+  `sudo apt-get install libcairo2-dev`
 
 * For Fedora:
 
-	sudo yum install cairo-devel
+  `sudo yum install cairo-devel`
 
 * For openSUSE:
 
-	zypper install cairo-devel
+  `zypper install cairo-devel`
 	
 * For MacOS HomeBrew:
 
-	brew install cairo
+  `brew install cairo`
 
 * For MacOS MacPorts:
 
-	sudo port install cairo
+  `sudo port install cairo`
 
 * For Windows, install gtk:
 
-	http://www.gtk.org/download/
+  `http://www.gtk.org/download/`
 
 Install go-cairo
 
-	go get github.com/bit101/go-cairo
+  `go get github.com/bit101/go-cairo`
 
-Check examples at `go-cairo-examples`
+Check examples in `go-cairo-examples`
 
 Copyrights: See LICENSE file
