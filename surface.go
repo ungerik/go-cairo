@@ -141,27 +141,27 @@ func (s *Surface) Restore() {
 	C.cairo_restore(s.context)
 }
 
-// PushGroup ...
+// PushGroup temporarily redirects drawing to an intermediate surface known as a group.
 func (s *Surface) PushGroup() {
 	C.cairo_push_group(s.context)
 }
 
-// PushGroupWithContent ...
+// PushGroupWithContent temporarily redirects drawing to an intermediate surface known as a group, with content.
 func (s *Surface) PushGroupWithContent(content Content) {
 	C.cairo_push_group_with_content(s.context, C.cairo_content_t(content))
 }
 
-// PopGroup ...
+// PopGroup terminates the redirection begun by a call to cairo_push_group() or cairo_push_group_with_content() and returns a new pattern containing the results of all drawing operations performed to the group.
 func (s *Surface) PopGroup() (pattern *Pattern) {
 	return &Pattern{C.cairo_pop_group(s.context)}
 }
 
-// PopGroupToSource ...
+// PopGroupToSource terminates the redirection begun by a call to cairo_push_group() or cairo_push_group_with_content() and installs the resulting pattern as the source pattern in the given cairo context.
 func (s *Surface) PopGroupToSource() {
 	C.cairo_pop_group_to_source(s.context)
 }
 
-// SetOperator ...
+// SetOperator sets the compositing operator to be used for all drawing operations.
 func (s *Surface) SetOperator(operator Operator) {
 	C.cairo_set_operator(s.context, C.cairo_operator_t(operator))
 }
@@ -186,12 +186,12 @@ func (s *Surface) SetSourceRGBA(red, green, blue, alpha float64) {
 	C.cairo_set_source_rgba(s.context, C.double(red), C.double(green), C.double(blue), C.double(alpha))
 }
 
-// SetSourceSurface ...
+// SetSourceSurface is a convenience function for creating a pattern from surface and setting it as the source in cr with cairo_set_source().
 func (s *Surface) SetSourceSurface(surface *Surface, x, y float64) {
 	C.cairo_set_source_surface(s.context, surface.surface, C.double(x), C.double(y))
 }
 
-// SetTolerance ...
+// SetTolerance sets the tolerance used when converting paths into trapezoids.
 func (s *Surface) SetTolerance(tolerance float64) {
 	C.cairo_set_tolerance(s.context, C.double(tolerance))
 }
@@ -201,7 +201,7 @@ func (s *Surface) SetAntialias(antialias Antialias) {
 	C.cairo_set_antialias(s.context, C.cairo_antialias_t(antialias))
 }
 
-// SetFillRule ...
+// SetFillRule sets the current fill rule within the cairo context.
 func (s *Surface) SetFillRule(fillRule FillRule) {
 	C.cairo_set_fill_rule(s.context, C.cairo_fill_rule_t(fillRule))
 }
@@ -263,7 +263,7 @@ func (s *Surface) SetMatrix(matrix Matrix) {
 	C.cairo_set_matrix(s.context, matrix.Native())
 }
 
-// IdentityMatrix ...
+// IdentityMatrix sets the transformation matrix for the surface to an identity matrix.
 func (s *Surface) IdentityMatrix() {
 	C.cairo_identity_matrix(s.context)
 }
