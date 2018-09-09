@@ -347,6 +347,16 @@ type Pattern struct {
 	pattern *C.cairo_pattern_t
 }
 
+type Linear struct {
+	X0, Y0 float64
+	X1, Y1 float64
+}
+
+type Radial struct {
+	CX0, CY0, Radius0 float64
+	CX1, CY1, Radius1 float64
+}
+
 type Rectangle struct {
 	X, Y          float64
 	Width, Height float64

@@ -681,7 +681,60 @@ func (self *Surface) GetStride() int {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Pattern creation methods
+// Pattern methods
+
+func NewPatternForSurface(s *Surface) *Pattern {
+	return &Pattern{C.cairo_pattern_create_for_surface(s.surface)}
+}
+
+func NewPatternLinear(l Linear) *Pattern {
+	return &Pattern{C.cairo_pattern_create_linear(C.double(l.X0), C.double(l.Y0), C.double(l.X1), C.double(l.Y1))}
+}
+
+func NewPatternRadial(r Radial) *Pattern {
+	return &Pattern{C.cairo_pattern_create_radial(C.double(r.CX0), C.double(r.CY0), C.double(r.Radius0), C.double(r.CX1), C.double(r.CY1), C.double(r.Radius1))}
+}
+
+func (self *Pattern) Destroy() {
+	C.cairo_pattern_destroy(self.pattern)
+}
+
+func (self *Pattern) AddColorStopRGBA(offset, red, green, blue, alpha float64) {
+	C.cairo_pattern_add_color_stop_rgba(self.pattern, C.double(offset), C.double(red), C.double(green), C.double(blue), C.double(alpha))
+}
+
+func (self *Pattern) AddColorStopRGB(offset, red, green, blue float64) {
+	C.cairo_pattern_add_color_stop_rgb(self.pattern, C.double(offset), C.double(red), C.double(green), C.double(blue))
+}
+
+func (self *Pattern) SetMatrix(matrix Matrix) {
+	C.cairo_pattern_set_matrix(self.pattern, matrix.cairo_matrix_t())
+}
+
+func (self *Pattern) GetMatrix() (matrix Matrix) {
+	C.cairo_pattern_get_matrix(self.pattern, (*C.cairo_matrix_t)(unsafe.Pointer(&matrix)))
+	return matrix
+}
+
+func (self *Pattern) SetExtend(extend Extent) {
+	C.cairo_pattern_set_extend(self.pattern, C.cairo_extend_t(extend))
+}
+
+func (self *Pattern) GetExtend() Extent {
+	return Extent(C.cairo_pattern_get_extend(self.pattern))
+}
+
+func (self *Pattern) SetFilter(filter Filter) {
+	C.cairo_pattern_set_filter(self.pattern, C.cairo_filter_t(filter))
+}
+
+func (self *Pattern) GetFilter() Filter {
+	return Filter(C.cairo_pattern_get_filter(self.pattern))
+}
+
+func (self *Pattern) Status() Status {
+	return Status(C.cairo_pattern_status(self.pattern))
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // image.Image methods
