@@ -37,6 +37,12 @@ func NewSurfaceFromC(s Cairo_surface, c Cairo_context) *Surface {
 	return &Surface{surface: s, context: c}
 }
 
+func NewSurfaceFromData(data unsafe.Pointer, format Format, width, height, stride int) *Surface {
+	s := C.cairo_image_surface_create_for_data((*C.uchar)(data), C.cairo_format_t(format),
+			C.int(width), C.int(height), C.int(stride))
+	return &Surface{surface: s, context: C.cairo_create(s)}
+}
+
 func NewSurfaceFromPNG(filename string) (*Surface, Status) {
 
 	cstr := C.CString(filename)
