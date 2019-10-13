@@ -42,6 +42,10 @@ For Fedora:
 For openSUSE:
 
 	zypper install cairo-devel
+
+For MacOS you may get errors finding cairo-pdf.h. To fix this run:
+
+	xcode-select --install
   
 Install go-cairo and run go-cairo-example:
 
