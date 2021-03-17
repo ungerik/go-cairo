@@ -376,7 +376,11 @@ type TextExtents struct {
 }
 
 type FontExtents struct {
-	// todo
+	Ascent      float64
+	Descent     float64
+	Height      float64
+	MaxXadvance float64
+	MaxYadvance float64
 }
 
 type FontFace struct {
