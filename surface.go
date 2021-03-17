@@ -1,4 +1,5 @@
 // +build !goci
+
 package cairo
 
 // #include <cairo/cairo-pdf.h>
@@ -39,7 +40,7 @@ func NewSurfaceFromC(s Cairo_surface, c Cairo_context) *Surface {
 
 func NewSurfaceFromData(data unsafe.Pointer, format Format, width, height, stride int) *Surface {
 	s := C.cairo_image_surface_create_for_data((*C.uchar)(data), C.cairo_format_t(format),
-			C.int(width), C.int(height), C.int(stride))
+		C.int(width), C.int(height), C.int(stride))
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
@@ -468,7 +469,6 @@ func (self *Surface) SetFontOptions(fontOptions *FontOptions) {
 
 func (self *Surface) GetFontOptions() *FontOptions {
 	panic("not implemented") // todo
-	return nil
 }
 
 func (self *Surface) SetFontFace(fontFace *FontFace) {
@@ -477,7 +477,6 @@ func (self *Surface) SetFontFace(fontFace *FontFace) {
 
 func (self *Surface) GetFontFace() *FontFace {
 	panic("not implemented") // todo
-	return nil
 }
 
 func (self *Surface) SetScaledFont(scaledFont *ScaledFont) {
@@ -486,7 +485,6 @@ func (self *Surface) SetScaledFont(scaledFont *ScaledFont) {
 
 func (self *Surface) GetScaledFont() *ScaledFont {
 	panic("not implemented") // todo
-	return nil
 }
 
 func (self *Surface) ShowText(text string) {
@@ -531,7 +529,6 @@ func (self *Surface) TextExtents(text string) *TextExtents {
 func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
 	panic("not implemented") // todo
 	//C.cairo_text_extents
-	return nil
 }
 
 func (self *Surface) FontExtents() *FontExtents {
@@ -580,7 +577,6 @@ func (self *Surface) Destroy() {
 func (self *Surface) GetDevice() *Device {
 	//C.cairo_surface_get_device
 	panic("not implemented") // todo
-	return nil
 }
 
 func (self *Surface) GetReferenceCount() int {

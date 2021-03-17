@@ -1,4 +1,5 @@
 // +build !goci
+
 package cairo
 
 // #cgo pkg-config: cairo

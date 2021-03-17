@@ -1,4 +1,5 @@
 // +build !goci
+
 package main
 
 // Simple test for cairo package
