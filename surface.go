@@ -115,6 +115,20 @@ func NewSVGSurface(filename string, widthInPoints, heightInPoints float64, versi
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+func NewRecordingSurface(content Content, extents *Rectangle) *Surface {
+	var rect *C.cairo_rectangle_t
+	if extents != nil {
+		rect = &C.cairo_rectangle_t{
+			x:      C.double(extents.X),
+			y:      C.double(extents.Y),
+			width:  C.double(extents.Width),
+			height: C.double(extents.Height),
+		}
+	}
+	s := C.cairo_recording_surface_create(C.cairo_content_t(content), rect)
+	return &Surface{surface: s, context: C.cairo_create(s)}
+}
+
 func (self *Surface) GetCurrentPoint() (float64, float64) {
 	if !self.HasCurrentPoint() {
 		return 0, 0
@@ -224,6 +238,11 @@ func (self *Surface) Rotate(angle float64) {
 
 func (self *Surface) Transform(matrix Matrix) {
 	C.cairo_transform(self.context, matrix.cairo_matrix_t())
+}
+
+func (self *Surface) GetMatrix() (matrix Matrix) {
+	C.cairo_get_matrix(self.context, (*C.cairo_matrix_t)(unsafe.Pointer(&matrix)))
+	return matrix
 }
 
 func (self *Surface) SetMatrix(matrix Matrix) {
@@ -516,9 +535,16 @@ func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
 }
 
 func (self *Surface) FontExtents() *FontExtents {
-	panic("not implemented") // todo
-	//C.cairo_text_extents
-	return nil
+	cfe := C.cairo_font_extents_t{}
+	C.cairo_font_extents(self.context, &cfe)
+	fe := &FontExtents{
+		Ascent:      float64(cfe.ascent),
+		Descent:     float64(cfe.descent),
+		Height:      float64(cfe.height),
+		MaxXadvance: float64(cfe.max_x_advance),
+		MaxYadvance: float64(cfe.max_y_advance),
+	}
+	return fe
 }
 
 ///////////////////////////////////////////////////////////////////////////////
