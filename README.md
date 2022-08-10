@@ -43,6 +43,10 @@ For openSUSE:
 
 	zypper install cairo-devel
 
+For Arch Linux: (also [gcc](https://archlinux.org/packages/core/x86_64/gcc/) and [pkgconf](https://archlinux.org/packages/core/x86_64/pkgconf/) are required)
+	
+	sudo pacman -S cairo
+
 For MacOS you may get errors finding cairo-pdf.h. To fix this run:
 
 	xcode-select --install
