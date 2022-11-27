@@ -1,3 +1,4 @@
+// Package cairo wraps the c cairographics library.
 package cairo
 
 // #cgo CFLAGS: -Wall -O2

@@ -1,5 +1,7 @@
+//go:build !goci
 // +build !goci
 
+// Package cairo wraps the c cairographics library.
 package cairo
 
 // #cgo pkg-config: cairo

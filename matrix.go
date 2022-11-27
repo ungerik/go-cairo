@@ -1,3 +1,4 @@
+// Package cairo wraps the c cairographics library.
 package cairo
 
 // #include <cairo/cairo.h>
