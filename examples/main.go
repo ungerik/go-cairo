@@ -7,7 +7,7 @@ import (
 	"math"
 	"math/rand"
 
-	cairo "github.com/bit101/gairo"
+	cairo "github.com/bit101/go-cairo"
 )
 
 func main() {

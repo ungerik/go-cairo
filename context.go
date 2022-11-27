@@ -42,10 +42,9 @@ func (c *Context) GetCurrentPoint() (float64, float64) {
 	y := C.double(0)
 	C.cairo_get_current_point(c.context, &x, &y)
 
-	// if c.GetStatus() != StatusSuccess {
-	// May not need to panic here. Per cairo spec, if status is error, return 0, 0, which this will do.
-	// panic("cairo.Context.GetCurrentPoint() unable to get current point.")
-	// }
+	if c.GetStatus() != StatusSuccess {
+		return 0.0, 0.0
+	}
 	return float64(x), float64(y)
 }
 
@@ -439,36 +438,6 @@ func (c *Context) SetFontMatrix(matrix Matrix) {
 	C.cairo_set_font_matrix(c.context, matrix.Native())
 }
 
-// SetFontOptions tbd
-func (c *Context) SetFontOptions(fontOptions *FontOptions) {
-	panic("not implemented") // todo
-}
-
-// GetFontOptions tbd
-func (c *Context) GetFontOptions() *FontOptions {
-	panic("not implemented") // todo
-}
-
-// SetFontFace tbd
-func (c *Context) SetFontFace(fontFace *FontFace) {
-	panic("not implemented") // todo
-}
-
-// GetFontFace tbd
-func (c *Context) GetFontFace() *FontFace {
-	panic("not implemented") // todo
-}
-
-// SetScaledFont tbd
-func (c *Context) SetScaledFont(scaledFont *ScaledFont) {
-	panic("not implemented") // todo
-}
-
-// GetScaledFont tbd
-func (c *Context) GetScaledFont() *ScaledFont {
-	panic("not implemented") // todo
-}
-
 // ShowText tbd
 func (c *Context) ShowText(text string) {
 	cs := C.CString(text)
@@ -476,25 +445,11 @@ func (c *Context) ShowText(text string) {
 	C.free(unsafe.Pointer(cs))
 }
 
-// ShowGlyphs tbd
-func (c *Context) ShowGlyphs(glyphs []Glyph) {
-	panic("not implemented") // todo
-}
-
-// ShowTextGlyphs tbd
-func (c *Context) ShowTextGlyphs(text string, glyphs []Glyph, clusters []TextCluster, flags TextClusterFlag) {
-}
-
 // TextPath tbd
 func (c *Context) TextPath(text string) {
 	cs := C.CString(text)
 	C.cairo_text_path(c.context, cs)
 	C.free(unsafe.Pointer(cs))
-}
-
-// GlyphPath tbd
-func (c *Context) GlyphPath(glyphs []Glyph) {
-	panic("not implemented") // todo
 }
 
 // TextExtents tbd
@@ -512,18 +467,6 @@ func (c *Context) TextExtents(text string) *TextExtents {
 		Yadvance: float64(cte.y_advance),
 	}
 	return te
-}
-
-// GlyphExtents tbd
-func (c *Context) GlyphExtents(glyphs []Glyph) *TextExtents {
-	panic("not implemented") // todo
-	//C.cairo_text_extents
-}
-
-// FontExtents tbd
-func (c *Context) FontExtents() *FontExtents {
-	panic("not implemented") // todo
-	//C.cairo_text_extents
 }
 
 // GetStatus tbd

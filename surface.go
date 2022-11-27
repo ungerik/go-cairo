@@ -9,6 +9,7 @@ package cairo
 import "C"
 
 import (
+	"errors"
 	"unsafe"
 )
 
@@ -137,33 +138,34 @@ func (s *Surface) HasShowTextGlyphs() bool {
 // GetData returns a copy of the surfaces raw pixel data.
 // This method also calls Flush.
 // GetData tbd
-func (s *Surface) GetData() []byte {
+func (s *Surface) GetData() ([]byte, error) {
 	s.Flush()
 	dataPtr := C.cairo_image_surface_get_data(s.surface)
 	if dataPtr == nil {
-		panic("cairo.Surface.GetData(): can't access surface pixel data")
+		return nil, errors.New("cairo.Surface.GetData(): can't access surface pixel data")
 	}
 	stride := C.cairo_image_surface_get_stride(s.surface)
 	height := C.cairo_image_surface_get_height(s.surface)
-	return C.GoBytes(unsafe.Pointer(dataPtr), stride*height)
+	return C.GoBytes(unsafe.Pointer(dataPtr), stride*height), nil
 }
 
 // SetData sets the surfaces raw pixel data.
 // This method also calls Flush and MarkDirty.
 // SetData tbd
-func (s *Surface) SetData(data []byte) {
+func (s *Surface) SetData(data []byte) error {
 	s.Flush()
 	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(s.surface))
 	if dataPtr == nil {
-		panic("cairo.Surface.SetData(): can't access surface pixel data")
+		return errors.New("cairo.Surface.SetData(): can't access surface pixel data")
 	}
 	stride := C.cairo_image_surface_get_stride(s.surface)
 	height := C.cairo_image_surface_get_height(s.surface)
 	if len(data) != int(stride*height) {
-		panic("cairo.Surface.SetData(): invalid data size")
+		return errors.New("cairo.Surface.SetData(): invalid data size")
 	}
 	C.memcpy(dataPtr, unsafe.Pointer(&data[0]), C.size_t(stride*height))
 	s.MarkDirty()
+	return nil
 }
 
 // GetFormat tbd
