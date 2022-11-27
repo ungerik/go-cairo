@@ -10,6 +10,7 @@ Very significant fork from Erik Unger's version https://github.com/ungerik/go-ca
 * Did a lot of documentation.
 * Removed a bunch of dead or stubbed out code that wasn't being used.
 * Moved from panics and cairo statuses to Go errors.
+* Began writing tests.
 
 ### Installation:
 
