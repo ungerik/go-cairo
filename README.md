@@ -2,26 +2,14 @@
 
 ### Go binding for the cairo graphics library
 
-Forked from Erik Unger's version https://github.com/ungerik/go-cairo
-* added missing methods, including support for radial gradients and mesh patterns
-* began to flesh out matrix and transform methods more completely
-* cleaned up code to pass the Go linter and Go best practices in general
-* began to flesh out documentation of all methods
-* removed `extimage` package, which, while useful, transcends cairo itself
-* began compiling more a more complete set of examples
-
-Missing features
-* TextCluster
-* FontExtents
-* FontFace
-* FontOptions
-* ScaledFont
-* Glyph
-* GetDevice(s)
-
-Future plans
-* Possibly separate surface and context to be more in line with the cairo structure
-* Finish documenting methods
+Very significant fork from Erik Unger's version https://github.com/ungerik/go-cairo
+* Added a a lot of missing methods.
+* Broke up surface and context to separate entities in separate files.
+* Broke down cairo.go into a lot of individual const files.
+* General naming best practices: receiver names, var and const names, function names, etc.
+* Did a lot of documentation.
+* Removed a bunch of dead or stubbed out code that wasn't being used.
+* Moved from panics and cairo statuses to Go errors.
 
 ### Installation:
 

@@ -43,43 +43,43 @@ func NewSurfaceFromPNG(filename string) (*Surface, error) {
 	return surface, nil
 }
 
-// Finish tbd
+// Finish finishes the surface. Further drawing operations will fail.
 func (s *Surface) Finish() {
 	C.cairo_surface_finish(s.surface)
 }
 
-// Destroy tbd
+// Destroy destroys the surface when no more references exist to it, freeing memory.
 func (s *Surface) Destroy() {
 	C.cairo_surface_destroy(s.surface)
 }
 
-// GetReferenceCount tbd
+// GetReferenceCount gets the number of objects that are holding a reference to this surface.
 func (s *Surface) GetReferenceCount() int {
 	return int(C.cairo_surface_get_reference_count(s.surface))
 }
 
-// GetStatus tbd
+// GetStatus gets the status of the surface based on the last operation.
 func (s *Surface) GetStatus() Status {
 	return Status(C.cairo_surface_status(s.surface))
 }
 
-// GetContent tbd
+// GetContent gets the content type of the surface.
 func (s *Surface) GetContent() Content {
 	return Content(C.cairo_surface_get_content(s.surface))
 }
 
-// WriteToPNG tbd
+// WriteToPNG saves the surface to an external png file
 func (s *Surface) WriteToPNG(filename string) error {
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
 	status := Status(C.cairo_surface_write_to_png(s.surface, cs))
 	if status != StatusSuccess {
-		return errors.New(status.String)
+		return errors.New(status.String())
 	}
 	return nil
 }
 
-// Flush tbd
+// Flush finished any pending drawing operations on the surface.
 func (s *Surface) Flush() {
 	C.cairo_surface_flush(s.surface)
 }
