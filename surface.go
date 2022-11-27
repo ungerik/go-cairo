@@ -65,12 +65,6 @@ func (s *Surface) Destroy() {
 	C.cairo_surface_destroy(s.surface)
 }
 
-// GetDevice tbd
-func (s *Surface) GetDevice() *Device {
-	//C.cairo_surface_get_device
-	panic("not implemented") // todo
-}
-
 // GetReferenceCount tbd
 func (s *Surface) GetReferenceCount() int {
 	return int(C.cairo_surface_get_reference_count(s.surface))
@@ -79,11 +73,6 @@ func (s *Surface) GetReferenceCount() int {
 // GetStatus tbd
 func (s *Surface) GetStatus() Status {
 	return Status(C.cairo_surface_status(s.surface))
-}
-
-// GetType tbd
-func (s *Surface) GetType() SurfaceType {
-	return SurfaceType(C.cairo_surface_get_type(s.surface))
 }
 
 // GetContent tbd

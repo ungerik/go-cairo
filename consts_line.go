@@ -1,13 +1,5 @@
-// package cairo contains constants for use in cairo
+// Package cairo wraps the c cairographics library.
 package cairo
-
-// #cgo pkg-config: cairo
-// #include <cairo/cairo-pdf.h>
-// #include <cairo/cairo-ps.h>
-// #include <cairo/cairo-svg.h>
-// #include <stdlib.h>
-// #include <string.h>
-import "C"
 
 // LineCap cairo_line_cap_t
 type LineCap int

@@ -1,4 +1,4 @@
-// package cairo contains constants for use in cairo
+// Package cairo wraps the c cairographics library.
 package cairo
 
 // #cgo pkg-config: cairo

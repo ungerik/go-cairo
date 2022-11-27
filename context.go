@@ -22,6 +22,12 @@ func NewContext(surface *Surface) *Context {
 	}
 }
 
+// Rectangle rectangle struct
+type Rectangle struct {
+	X, Y          float64
+	Width, Height float64
+}
+
 // Native returns a pointer to the native cairo context
 func (c Context) Native() uintptr {
 	return uintptr(unsafe.Pointer(c.context))
