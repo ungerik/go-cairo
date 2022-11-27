@@ -26,34 +26,21 @@ func NewSurface(format Format, width, height int) *Surface {
 }
 
 // NewSurfaceFromPNG creates a new Surface struct from a png file.
-func NewSurfaceFromPNG(filename string) (*Surface, Status) {
+func NewSurfaceFromPNG(filename string) (*Surface, error) {
 	cstr := C.CString(filename)
 	defer C.free(unsafe.Pointer(cstr))
 
 	surfaceNative := C.cairo_image_surface_create_from_png(cstr)
 	status := Status(C.cairo_surface_status(surfaceNative))
 	if status != StatusSuccess {
-		return nil, status
+		return nil, errors.New(status.String())
 	}
 
 	surface := &Surface{
 		surface: surfaceNative,
 	}
 
-	return surface, StatusSuccess
-}
-
-// Native returns a pointer to the native cairo surface
-func (s *Surface) Native() uintptr {
-	return uintptr(unsafe.Pointer(s.surface))
-}
-
-// CreateForRectangle tbd
-func (s *Surface) CreateForRectangle(x, y, width, height float64) *Surface {
-	return &Surface{
-		surface: C.cairo_surface_create_for_rectangle(s.surface,
-			C.double(x), C.double(y), C.double(width), C.double(height)),
-	}
+	return surface, nil
 }
 
 // Finish tbd
@@ -82,12 +69,14 @@ func (s *Surface) GetContent() Content {
 }
 
 // WriteToPNG tbd
-func (s *Surface) WriteToPNG(filename string) Status {
-
+func (s *Surface) WriteToPNG(filename string) error {
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
-
-	return Status(C.cairo_surface_write_to_png(s.surface, cs))
+	status := Status(C.cairo_surface_write_to_png(s.surface, cs))
+	if status != StatusSuccess {
+		return errors.New(status.String)
+	}
+	return nil
 }
 
 // Flush tbd
@@ -137,7 +126,6 @@ func (s *Surface) HasShowTextGlyphs() bool {
 
 // GetData returns a copy of the surfaces raw pixel data.
 // This method also calls Flush.
-// GetData tbd
 func (s *Surface) GetData() ([]byte, error) {
 	s.Flush()
 	dataPtr := C.cairo_image_surface_get_data(s.surface)
@@ -151,7 +139,6 @@ func (s *Surface) GetData() ([]byte, error) {
 
 // SetData sets the surfaces raw pixel data.
 // This method also calls Flush and MarkDirty.
-// SetData tbd
 func (s *Surface) SetData(data []byte) error {
 	s.Flush()
 	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(s.surface))
@@ -168,22 +155,22 @@ func (s *Surface) SetData(data []byte) error {
 	return nil
 }
 
-// GetFormat tbd
+// GetFormat returns the format of the surface.
 func (s *Surface) GetFormat() Format {
 	return Format(C.cairo_image_surface_get_format(s.surface))
 }
 
-// GetWidth tbd
+// GetWidth returns the width of the surface.
 func (s *Surface) GetWidth() int {
 	return int(C.cairo_image_surface_get_width(s.surface))
 }
 
-// GetHeight tbd
+// GetHeight returns the height of the surface.
 func (s *Surface) GetHeight() int {
 	return int(C.cairo_image_surface_get_height(s.surface))
 }
 
-// GetStride tbd
+// GetStride returns the stride of the surface.
 func (s *Surface) GetStride() int {
 	return int(C.cairo_image_surface_get_stride(s.surface))
 }
