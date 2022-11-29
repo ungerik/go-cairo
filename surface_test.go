@@ -8,7 +8,7 @@ import (
 )
 
 func TestSurfaceCreation(t *testing.T) {
-	surface := NewSurface(FormatARGB32, 800, 800)
+	surface := NewSurface(800, 800)
 
 	status := surface.GetStatus()
 	if status != StatusSuccess {
@@ -78,7 +78,7 @@ func TestSurfaceFromPng(t *testing.T) {
 }
 
 func TestFinish(t *testing.T) {
-	surface := NewSurface(FormatARGB32, 800, 800)
+	surface := NewSurface(800, 800)
 	context := NewContext(surface)
 	context.Rectangle(0, 0, 100, 100)
 	context.Stroke()
@@ -98,7 +98,7 @@ func TestFinish(t *testing.T) {
 
 func TestWritePng(t *testing.T) {
 	path := "testdata/temp.png"
-	surface := NewSurface(FormatARGB32, 800, 800)
+	surface := NewSurface(800, 800)
 	err := surface.WriteToPNG(path)
 	if err != nil {
 		t.Errorf("Unable to save image. Error: %s\n", err)
@@ -110,7 +110,7 @@ func TestWritePng(t *testing.T) {
 }
 
 func TestGetData(t *testing.T) {
-	surface := NewSurface(FormatARGB32, 10, 10)
+	surface := NewSurface(10, 10)
 	context := NewContext(surface)
 	context.SetSourceRGB(1, 0, 0)
 	context.Rectangle(0, 0, 10, 10)
@@ -145,7 +145,7 @@ func TestGetData(t *testing.T) {
 }
 
 func TestSetData(t *testing.T) {
-	surface := NewSurface(FormatARGB32, 10, 10)
+	surface := NewSurface(10, 10)
 
 	data := make([]byte, 10*10*4)
 	data[99] = 199

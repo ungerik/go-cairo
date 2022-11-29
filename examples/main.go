@@ -11,13 +11,15 @@ import (
 )
 
 func main() {
-	shapes()
+	text()
 }
 
 func text() {
-	surface := cairo.NewSurface(cairo.FormatARGB32, 240, 80)
+	surface := cairo.NewSurface(240, 80)
 	context := cairo.NewContext(surface)
-	context.SelectFontFace("serif", cairo.FontSlantNormal, cairo.FontWeightBold)
+	context.SetSourceRGB(1, 1, 1)
+	context.Paint()
+	context.SelectFontFace("Arial", cairo.FontSlantNormal, cairo.FontWeightBold)
 	context.SetFontSize(32.0)
 	context.SetSourceRGB(0.0, 0.0, 1.0)
 	context.MoveTo(10.0, 50.0)
@@ -27,7 +29,7 @@ func text() {
 }
 
 func shapes() {
-	surface := cairo.NewSurface(cairo.FormatARGB32, 600, 230)
+	surface := cairo.NewSurface(600, 230)
 	context := cairo.NewContext(surface)
 	context.SetSourceRGB(1, 1, 1)
 	context.Paint()
@@ -60,7 +62,7 @@ func shapes() {
 }
 
 func colors() {
-	surface := cairo.NewSurface(cairo.FormatARGB32, 600, 600)
+	surface := cairo.NewSurface(600, 600)
 	context := cairo.NewContext(surface)
 	for i := 0.0; i < 100; i++ {
 		for j := 0.0; j < 100; j++ {
@@ -79,7 +81,7 @@ func colors() {
 }
 
 func gradients() {
-	surface := cairo.NewSurface(cairo.FormatARGB32, 600, 300)
+	surface := cairo.NewSurface(600, 300)
 	context := cairo.NewContext(surface)
 	radialPattern := cairo.CreateRadialGradient(150, 150, 0, 150, 150, 150)
 	radialPattern.AddColorStopRGB(0, 1, 0, 0)
@@ -100,7 +102,7 @@ func gradients() {
 }
 
 func mesh() {
-	surface := cairo.NewSurface(cairo.FormatARGB32, 600, 600)
+	surface := cairo.NewSurface(600, 600)
 	context := cairo.NewContext(surface)
 	pattern := cairo.CreateMesh()
 

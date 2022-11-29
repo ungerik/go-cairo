@@ -258,17 +258,17 @@ func (c *Context) ArcNegative(xc, yc, radius, angle1, angle2 float64) {
 		C.double(angle1), C.double(angle2))
 }
 
-// RelMoveTo tbd
+// RelMoveTo moves to coordinates relative to the current point.
 func (c *Context) RelMoveTo(dx, dy float64) {
 	C.cairo_rel_move_to(c.context, C.double(dx), C.double(dy))
 }
 
-// RelLineTo tbd
+// RelLineTo draws a line to coordinates relative to the current point.
 func (c *Context) RelLineTo(dx, dy float64) {
 	C.cairo_rel_line_to(c.context, C.double(dx), C.double(dy))
 }
 
-// RelCurveTo tbd
+// RelCurveTo draws a curve to coords relative the the current point.
 func (c *Context) RelCurveTo(dx1, dy1, dx2, dy2, dx3, dy3 float64) {
 	C.cairo_rel_curve_to(c.context,
 		C.double(dx1), C.double(dy1),
@@ -276,14 +276,14 @@ func (c *Context) RelCurveTo(dx1, dy1, dx2, dy2, dx3, dy3 float64) {
 		C.double(dx3), C.double(dy3))
 }
 
-// Rectangle tbd
+// Rectangle creates a rectangle path.
 func (c *Context) Rectangle(x, y, width, height float64) {
 	C.cairo_rectangle(c.context,
 		C.double(x), C.double(y),
 		C.double(width), C.double(height))
 }
 
-// ClosePath tbd
+// ClosePath closes the current path, drawing a line back to the starting point.
 func (c *Context) ClosePath() {
 	C.cairo_close_path(c.context)
 }
@@ -299,7 +299,7 @@ func (c *Context) PathExtents() (left, top, right, bottom float64) {
 ///////////////////////////////////////////////////////////////////////////////
 // Painting methods
 
-// Paint tbd
+// Paint paints the canvas with the current source color.
 func (c *Context) Paint() {
 	C.cairo_paint(c.context)
 }
@@ -319,22 +319,22 @@ func (c *Context) MaskSurface(surface *Surface, surfaceX, surfaceY float64) {
 	C.cairo_mask_surface(c.context, surface.surface, C.double(surfaceX), C.double(surfaceY))
 }
 
-// Stroke tbd
+// Stroke strokes the current path and clears the path.
 func (c *Context) Stroke() {
 	C.cairo_stroke(c.context)
 }
 
-// StrokePreserve tbd
+// StrokePreserve stokes the current path but does not clear it.
 func (c *Context) StrokePreserve() {
 	C.cairo_stroke_preserve(c.context)
 }
 
-// Fill tbd
+// Fill fills the current path and clears the path.
 func (c *Context) Fill() {
 	C.cairo_fill(c.context)
 }
 
-// FillPreserve tbd
+// FillPreserve fills the current path but does not clear it.
 func (c *Context) FillPreserve() {
 	C.cairo_fill_preserve(c.context)
 }
@@ -423,14 +423,14 @@ func (c *Context) ClipRectangleList() ([]Rectangle, error) {
 ///////////////////////////////////////////////////////////////////////////////
 // Font/Text methods
 
-// SelectFontFace tbd
+// SelectFontFace selectes the active font with slant and weight.
 func (c *Context) SelectFontFace(name string, fontSlant, fontWeight int) {
 	str := C.CString(name)
 	C.cairo_select_font_face(c.context, str, C.cairo_font_slant_t(fontSlant), C.cairo_font_weight_t(fontWeight))
 	C.free(unsafe.Pointer(str))
 }
 
-// SetFontSize tbd
+// SetFontSize sets the size of the current font.
 func (c *Context) SetFontSize(size float64) {
 	C.cairo_set_font_size(c.context, C.double(size))
 }
@@ -440,7 +440,7 @@ func (c *Context) SetFontMatrix(matrix Matrix) {
 	C.cairo_set_font_matrix(c.context, matrix.Native())
 }
 
-// ShowText tbd
+// ShowText draws and fills the given text at the current drawing location.
 func (c *Context) ShowText(text string) {
 	cs := C.CString(text)
 	C.cairo_show_text(c.context, cs)
