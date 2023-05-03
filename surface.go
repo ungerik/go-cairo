@@ -130,6 +130,10 @@ func NewRecordingSurface(content Content, extents *Rectangle) *Surface {
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+func (self *Surface) SVGSurfaceSetDocumentUnit(unit SVGUnit) {
+	C.cairo_svg_surface_set_document_unit(self.surface, C.cairo_svg_unit_t(unit))
+}
+
 func (self *Surface) GetCurrentPoint() (float64, float64) {
 	if !self.HasCurrentPoint() {
 		return 0, 0

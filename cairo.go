@@ -114,6 +114,22 @@ const (
 	ANTIALIAS_SUBPIXEL
 )
 
+// cairo_svg_unit_t
+type SVGUnit int
+
+const (
+	CAIRO_SVG_UNIT_USER = iota
+	CAIRO_SVG_UNIT_EM
+	CAIRO_SVG_UNIT_EX
+	CAIRO_SVG_UNIT_PX
+	CAIRO_SVG_UNIT_IN
+	CAIRO_SVG_UNIT_CM
+	CAIRO_SVG_UNIT_MM
+	CAIRO_SVG_UNIT_PT
+	CAIRO_SVG_UNIT_PC
+	CAIRO_SVG_UNIT_PERCENT
+)
+
 // cairo_fill_rule_t
 type FillRule int
 
