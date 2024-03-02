@@ -3,6 +3,7 @@
 package cairo
 
 // #cgo pkg-config: cairo
+// #include <cairo/cairo-ft.h>
 // #include <cairo/cairo-pdf.h>
 // #include <cairo/cairo-ps.h>
 // #include <cairo/cairo-svg.h>
@@ -401,7 +402,8 @@ type FontExtents struct {
 }
 
 type FontFace struct {
-	// todo
+	face    *C.cairo_font_face_t
+	ft_face *C.FT_Face
 }
 
 type FontOptions struct {
