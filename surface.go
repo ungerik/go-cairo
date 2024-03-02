@@ -108,6 +108,15 @@ func NewPSSurface(filename string, widthInPoints, heightInPoints float64, level 
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+func NewEPSSurface(filename string, widthInPoints, heightInPoints float64, level PSLevel) *Surface {
+	cs := C.CString(filename)
+	defer C.free(unsafe.Pointer(cs))
+	s := C.cairo_ps_surface_create(cs, C.double(widthInPoints), C.double(heightInPoints))
+	C.cairo_ps_surface_restrict_to_level(s, C.cairo_ps_level_t(level))
+	C.cairo_ps_surface_set_eps(s, 1)
+	return &Surface{surface: s, context: C.cairo_create(s)}
+}
+
 func NewSVGSurface(filename string, widthInPoints, heightInPoints float64, version SVGVersion) *Surface {
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
