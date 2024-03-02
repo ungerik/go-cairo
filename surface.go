@@ -485,7 +485,7 @@ func (self *Surface) GetFontOptions() *FontOptions {
 }
 
 func (self *Surface) SetFontFace(fontFace *FontFace) {
-	panic("not implemented") // todo
+	C.cairo_set_font_face(self.context, fontFace.face)
 }
 
 func (self *Surface) GetFontFace() *FontFace {
