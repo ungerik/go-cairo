@@ -41,6 +41,23 @@ func (ft Cairo_freetype) DoneFreeType() error {
 }
 
 // Call FT_Open_Face to open a font by its pathname
+//
+// Example:
+//
+//	//  Initialize a new FreeType library object
+//	ft, err := cairo.InitFreeType()
+//	if err != nil {
+//	    log.Fatalln(err)
+//	}
+//	// Open font by its pathname
+//	myfont, err := ft.FtNewFace("MyFont.ttf")
+//	if err != nil {
+//	    log.Fatalln(err)
+//	}
+//	// Create a surface:
+//	surface := cairo.NewSurface(cairo.FORMAT_ARGB32, 200, 200)
+//	// Use the font:
+//	surface.SetFontFace(myfont)
 func (ft Cairo_freetype) FtNewFace(filename string) (*FontFace, error) {
 	var face C.FT_Face
 	cs := C.CString(filename)
@@ -57,6 +74,9 @@ func (ft Cairo_freetype) FtNewFace(filename string) (*FontFace, error) {
 }
 
 // Call FT_Open_Face to open a font that has been loaded into memory
+//
+// This is similar to FtNewFace, but loads the font from memory instead
+// of from file
 func (ft Cairo_freetype) FtNewMemoryFace(data []byte) (*FontFace, error) {
 	var face C.FT_Face
 	err := C.FT_New_Memory_Face(ft.library, (*C.uchar)(&data[0]), C.long(len(data)), 0, &face)
