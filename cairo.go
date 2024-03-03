@@ -2,7 +2,7 @@
 
 package cairo
 
-// #cgo pkg-config: cairo
+// #cgo pkg-config: cairo, cairo-ft
 // #include <cairo/cairo-ft.h>
 // #include <cairo/cairo-pdf.h>
 // #include <cairo/cairo-ps.h>
