@@ -1,12 +1,38 @@
+//go:build !goci
 // +build !goci
 
 package cairo
 
-// #include <cairo/cairo-pdf.h>
-// #include <cairo/cairo-ps.h>
-// #include <cairo/cairo-svg.h>
-// #include <stdlib.h>
-// #include <string.h>
+/*
+#include <cairo/cairo-pdf.h>
+#include <cairo/cairo-ps.h>
+#include <cairo/cairo-svg.h>
+#include <cairo/cairo-version.h>
+#include <stdlib.h>
+#include <string.h>
+
+#if CAIRO_VERSION_MAJOR == 1
+#if CAIRO_VERSION_MINOR < 16
+typedef enum _cairo_svg_unit {
+    CAIRO_SVG_UNIT_USER = 0,
+    CAIRO_SVG_UNIT_EM,
+    CAIRO_SVG_UNIT_EX,
+    CAIRO_SVG_UNIT_PX,
+    CAIRO_SVG_UNIT_IN,
+    CAIRO_SVG_UNIT_CM,
+    CAIRO_SVG_UNIT_MM,
+    CAIRO_SVG_UNIT_PT,
+    CAIRO_SVG_UNIT_PC,
+    CAIRO_SVG_UNIT_PERCENT
+} cairo_svg_unit_t;
+void
+cairo_svg_surface_set_document_unit (cairo_surface_t *surface,
+                                     cairo_svg_unit_t unit) {
+}
+#endif
+#endif
+
+*/
 import "C"
 
 import (
@@ -17,8 +43,10 @@ import (
 	"github.com/ungerik/go-cairo/extimage"
 )
 
-type Cairo_surface *C.cairo_surface_t
-type Cairo_context *C.cairo_t
+type (
+	Cairo_surface *C.cairo_surface_t
+	Cairo_context *C.cairo_t
+)
 
 // Golang struct to hold both a cairo surface and a cairo context
 type Surface struct {
@@ -45,7 +73,6 @@ func NewSurfaceFromData(data unsafe.Pointer, format Format, width, height, strid
 }
 
 func NewSurfaceFromPNG(filename string) (*Surface, Status) {
-
 	cstr := C.CString(filename)
 	defer C.free(unsafe.Pointer(cstr))
 
@@ -70,7 +97,6 @@ func NewSurfaceFromPNG(filename string) (*Surface, Status) {
 }
 
 func (self *Surface) Native() (surface, context uintptr) {
-
 	surface = uintptr(unsafe.Pointer(self.surface))
 	context = uintptr(unsafe.Pointer(self.context))
 
@@ -541,7 +567,7 @@ func (self *Surface) TextExtents(text string) *TextExtents {
 
 func (self *Surface) GlyphExtents(glyphs []Glyph) *TextExtents {
 	panic("not implemented") // todo
-	//C.cairo_text_extents
+	// C.cairo_text_extents
 }
 
 func (self *Surface) FontExtents() *FontExtents {
@@ -588,7 +614,7 @@ func (self *Surface) Destroy() {
 }
 
 func (self *Surface) GetDevice() *Device {
-	//C.cairo_surface_get_device
+	// C.cairo_surface_get_device
 	panic("not implemented") // todo
 }
 
@@ -609,7 +635,6 @@ func (self *Surface) GetContent() Content {
 }
 
 func (self *Surface) WriteToPNG(filename string) Status {
-
 	cs := C.CString(filename)
 	defer C.free(unsafe.Pointer(cs))
 
