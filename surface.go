@@ -165,6 +165,7 @@ func NewRecordingSurface(content Content, extents *Rectangle) *Surface {
 	return &Surface{surface: s, context: C.cairo_create(s)}
 }
 
+// Use of this function has no effect with Cairo older than version 1.16
 func (self *Surface) SVGSurfaceSetDocumentUnit(unit SVGUnit) {
 	C.cairo_svg_surface_set_document_unit(self.surface, C.cairo_svg_unit_t(unit))
 }
