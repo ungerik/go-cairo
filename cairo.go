@@ -404,6 +404,7 @@ type FontExtents struct {
 type FontFace struct {
 	face    *C.cairo_font_face_t
 	ft_face *C.FT_Face
+	data    []byte // anchors font data for FreeType lifetime
 }
 
 type FontOptions struct {
