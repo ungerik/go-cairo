@@ -79,7 +79,9 @@ func (ft Cairo_freetype) FtNewFace(filename string) (*FontFace, error) {
 // of from file
 func (ft Cairo_freetype) FtNewMemoryFace(data []byte) (*FontFace, error) {
 	var face C.FT_Face
-	err := C.FT_New_Memory_Face(ft.library, (*C.uchar)(&data[0]), C.long(len(data)), 0, &face)
+	dataCopy := make([]byte, len(data))
+	copy(dataCopy, data)
+	err := C.FT_New_Memory_Face(ft.library, (*C.uchar)(unsafe.Pointer(&dataCopy[0])), C.long(len(dataCopy)), 0, &face)
 	if err != 0 {
 		return nil, fmt.Errorf("FT_New_Memory_Face error %v", err)
 	}
@@ -87,6 +89,7 @@ func (ft Cairo_freetype) FtNewMemoryFace(data []byte) (*FontFace, error) {
 	return &FontFace{
 		face:    C.cairo_ft_font_face_create_for_ft_face(face, 0),
 		ft_face: &face,
+		data:    dataCopy,
 	}, nil
 }
 
